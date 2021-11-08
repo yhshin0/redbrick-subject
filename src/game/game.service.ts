@@ -42,8 +42,6 @@ export class GameService {
       throw new BadRequestException('요청 수정 값이 잘못되었습니다.');
     }
     await this.gameRepository.update({ id }, updateGameDto);
-    const game = await this.getGameById(id);
-    console.log(game);
-    return game;
+    return await this.getGameById(id);
   }
 }
