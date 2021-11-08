@@ -52,4 +52,10 @@ export class ProjectsService {
     project.isPublished = updateProjectDto.isPublished;
     return await this.projectRepository.save(project);
   }
+
+  async delete(id: number) {
+    const project = await this.findOne(id);
+    await this.projectRepository.softDelete({ id });
+    return project;
+  }
 }

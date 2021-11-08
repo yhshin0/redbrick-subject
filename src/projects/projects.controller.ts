@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -42,5 +43,10 @@ export class ProjectsController {
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
     return this.projectsService.update(+id, updateProjectDto);
+  }
+
+  @Delete('/:id')
+  deleteProject(@Param('id') id: string) {
+    return this.projectsService.delete(+id);
   }
 }
