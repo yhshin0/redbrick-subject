@@ -19,40 +19,35 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Post()
-  async createProject(
-    @Body() createProjectDto: CreateProjectDto,
-  ): Promise<Project> {
-    return await this.projectsService.createProject(createProjectDto);
+  createProject(@Body() createProjectDto: CreateProjectDto): Promise<Project> {
+    return this.projectsService.createProject(createProjectDto);
   }
 
   @Get()
-  async findAllProjects(
-    @Query('page') page: string,
-  ): Promise<IFindAllResponse> {
+  findAllProjects(@Query('page') page: string): Promise<IFindAllResponse> {
     const limit = 5;
     const offset = page ? (Number(page) - 1) * limit : 0;
-    const result = await this.projectsService.findAll({
+    return this.projectsService.findAll({
       take: limit,
       skip: offset,
     });
-    return result;
   }
 
   @Get('/:id')
-  async findProject(@Param('id') id: string): Promise<Project> {
-    return await this.projectsService.findOne(+id);
+  findProject(@Param('id') id: string): Promise<Project> {
+    return this.projectsService.findOne(+id);
   }
 
   @Patch('/:id')
-  async updateProject(
+  updateProject(
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
   ): Promise<Project> {
-    return await this.projectsService.update(+id, updateProjectDto);
+    return this.projectsService.update(+id, updateProjectDto);
   }
 
   @Delete('/:id')
-  async deleteProject(@Param('id') id: string): Promise<Project> {
-    return await this.projectsService.delete(+id);
+  deleteProject(@Param('id') id: string): Promise<Project> {
+    return this.projectsService.delete(+id);
   }
 }
