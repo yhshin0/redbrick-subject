@@ -27,8 +27,13 @@ export class ProjectsService {
     }
   }
 
-  async findAll() {
-    return await this.projectRepository.find();
+  async findAll({ take, skip }: { take: number; skip: number }) {
+    const totalCount = (await this.projectRepository.find()).length;
+    const data = await this.projectRepository.find({ skip, take });
+    return {
+      totalCount,
+      data,
+    };
   }
 
   async findOne(id: number) {
