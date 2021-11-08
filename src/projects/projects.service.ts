@@ -48,7 +48,7 @@ export class ProjectsService {
   async update(id: number, updateProjectDto: UpdateProjectDto) {
     const project = await this.findOne(id);
     project.title = updateProjectDto.title;
-    project.content = updateProjectDto.content;
+    project.code = updateProjectDto.code;
     project.isPublished = updateProjectDto.isPublished;
     return await this.projectRepository.save(project);
   }

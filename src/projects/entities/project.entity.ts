@@ -7,7 +7,7 @@ export class Project extends CoreEntity {
   title: string;
 
   @Column()
-  content: string;
+  code: string;
 
   @Column({ type: Boolean, default: false })
   isPublished: boolean;

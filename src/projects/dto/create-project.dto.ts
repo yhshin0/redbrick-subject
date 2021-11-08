@@ -5,7 +5,7 @@ export class CreateProjectDto {
   title: string;
 
   @IsString()
-  content: string;
+  code: string;
 
   // @IsNumber()
   // userId: number;
