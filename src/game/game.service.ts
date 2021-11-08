@@ -44,4 +44,10 @@ export class GameService {
     await this.gameRepository.update({ id }, updateGameDto);
     return await this.getGameById(id);
   }
+
+  async deleteGame(id: number): Promise<{ message: string }> {
+    await this.getGameById(id);
+    await this.gameRepository.softDelete({ id });
+    return { message: '게임 삭제 완료' };
+  }
 }
