@@ -34,11 +34,12 @@ export class GameService {
     if (addViewCount) {
       game.viewCount = game.viewCount + 1;
       try {
-        return await this.gameRepository.save(game);
+        await this.gameRepository.save(game);
       } catch (error) {
         throw new InternalServerErrorException();
       }
     }
+    return game;
   }
 
   async updateGame(id: number, updateGameDto: UpdateGameDto): Promise<Game> {
