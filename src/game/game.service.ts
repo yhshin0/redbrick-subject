@@ -17,6 +17,10 @@ export class GameService {
     private gameRepository: GameRepository,
   ) {}
 
+  async getGames(limit: number, offset: number): Promise<Game[]> {
+    return await this.gameRepository.find({ skip: offset, take: limit });
+  }
+
   createGame(createGameDto: CreateGameDto): Promise<Game> {
     return this.gameRepository.createGame(createGameDto);
   }

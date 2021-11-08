@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
@@ -19,6 +20,13 @@ export class GameController {
   @Post()
   createGame(@Body() createGameDto: CreateGameDto): Promise<Game> {
     return this.gameService.createGame(createGameDto);
+  }
+
+  @Get()
+  getGames(@Query('page') page: string): Promise<Game[]> {
+    const limit = 5;
+    const offset = page ? (Number(page) - 1) * limit : 0;
+    return this.gameService.getGames(limit, offset);
   }
 
   @Get('/:id')
