@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
 
 @Injectable()
@@ -42,5 +43,13 @@ export class ProjectsService {
       throw new NotFoundException('해당 project가 존재하지 않습니다.');
     }
     return existedProject;
+  }
+
+  async update(id: number, updateProjectDto: UpdateProjectDto) {
+    const project = await this.findOne(id);
+    project.title = updateProjectDto.title;
+    project.content = updateProjectDto.content;
+    project.isPublished = updateProjectDto.isPublished;
+    return await this.projectRepository.save(project);
   }
 }
