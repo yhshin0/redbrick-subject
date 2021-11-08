@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game } from './entities/game.entity';
@@ -31,7 +35,7 @@ export class GameService {
     }
   }
 
-  async deleteGame(id:number): Promise<{ message: string }> {
+  async deleteGame(id: number): Promise<{ message: string }> {
     await this.getGameById(id);
     await this.gameRepository.softDelete({ id });
     return { message: '게임 삭제 완료' };

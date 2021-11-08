@@ -18,7 +18,7 @@ export class GameController {
   }
 
   @Delete('/:id')
-  deleteGameById(@Param('id') id: string): Promise<Game> {
-    return this.gameService.getGameById(Number(id), true);
+  deleteGameById(@Param('id') id: string): Promise<{ message: string }> {
+    return this.gameService.deleteGame(Number(id));
   }
 }
