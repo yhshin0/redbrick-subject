@@ -15,6 +15,7 @@ export class User extends CoreEntity {
   @Column({ type: 'datetime', nullable: true })
   loginedAt: Date;
 
+  // 나중에 프로젝트, 게임 테이블 생성되면 주석해제
   // @OneToMany((_type) => Project, (project) => project.user, {
   //   eager: true,
   //   cascade: true,
