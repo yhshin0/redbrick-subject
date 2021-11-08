@@ -29,7 +29,7 @@ export class ProjectsService {
   }
 
   async findAll({ take, skip }: { take: number; skip: number }) {
-    const totalCount = (await this.projectRepository.find()).length;
+    const totalCount = await this.projectRepository.count();
     const data = await this.projectRepository.find({ skip, take });
     return {
       totalCount,
