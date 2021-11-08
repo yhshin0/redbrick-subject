@@ -39,4 +39,8 @@ export class UsersService {
       };
     }
   }
+
+  async findOne(email: string): Promise<User> {
+    return await this.usersRepository.findOne({ email });
+  }
 }
