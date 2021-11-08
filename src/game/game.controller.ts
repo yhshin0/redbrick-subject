@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game } from './entities/game.entity';
 import { GameService } from './game.service';
@@ -10,5 +10,12 @@ export class GameController {
   @Post()
   createGame(@Body() createGameDto: CreateGameDto): Promise<Game> {
     return this.gameService.createGame(createGameDto);
+  }
+
+  @Get()
+  getGames(@Query('page') page: string): Promise<Game[]> {
+    const limit = 5;
+    const offset = page ? (Number(page) - 1) * limit : 0;
+    return this.gameService.getGames(limit, offset);
   }
 }
