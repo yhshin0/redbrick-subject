@@ -1,4 +1,4 @@
-import { CoreEntity } from 'src/core/entities/core.entity';
+import { CoreEntity } from '../../core/entities/core.entity';
 import { Column, Entity } from 'typeorm';
 
 @Entity()
