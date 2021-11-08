@@ -1,6 +1,12 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
+import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
 import { GameRepository } from './game.repository';
 
@@ -29,5 +35,15 @@ export class GameService {
         throw new InternalServerErrorException();
       }
     }
+  }
+
+  async updateGame(id: number, updateGameDto: UpdateGameDto): Promise<Game> {
+    if (Object.keys(updateGameDto).length === 0) {
+      throw new BadRequestException('요청 수정 값이 잘못되었습니다.');
+    }
+    await this.gameRepository.update({ id }, updateGameDto);
+    const game = await this.getGameById(id);
+    console.log(game);
+    return game;
   }
 }
