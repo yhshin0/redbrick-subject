@@ -8,10 +8,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from '../projects/entities/project.entity';
 import { User } from '../users/entities/user.entity';
+import { Like } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
 import { GameRepository } from './game.repository';
+import { skip, take } from 'rxjs';
 
 @Injectable()
 export class GameService {
@@ -19,10 +21,6 @@ export class GameService {
     @InjectRepository(GameRepository)
     private gameRepository: GameRepository,
   ) {}
-
-  async getGames(limit: number, offset: number): Promise<Game[]> {
-    return await this.gameRepository.find({ skip: offset, take: limit });
-  }
 
   createGame(
     createGameDto: CreateGameDto,
@@ -32,8 +30,12 @@ export class GameService {
     return this.gameRepository.createGame(createGameDto, project, user);
   }
 
+  getGames(limit: number, offset: number): Promise<Game[]> {
+    return this.gameRepository.findGames(limit, offset);
+  }
+
   async getGameById(id: number, addViewCount = false): Promise<Game> {
-    const game = await this.gameRepository.findOne({ id });
+    const game = await this.gameRepository.findOneGame(id);
     if (!game) {
       throw new NotFoundException('유효한 게임 id가 아닙니다.');
     }
@@ -47,6 +49,23 @@ export class GameService {
       }
     }
     return game;
+  }
+
+  async getGameByProjectId(project: Project): Promise<Game> {
+    const game = await this.gameRepository.findOne({
+      where: { project },
+      withDeleted: true,
+    });
+
+    if (!game) {
+      throw new NotFoundException('유효한 게임 id가 아닙니다.');
+    }
+
+    return game;
+  }
+
+  async restoreGame(id: number): Promise<void> {
+    await this.gameRepository.restore(id);
   }
 
   async updateGame(
@@ -75,7 +94,32 @@ export class GameService {
   }
 
   async addOrRemoveLike(id: number, user: User): Promise<{ message: string }> {
-    const game = await this.getGameById(id);
+    const game = await this.gameRepository.findOne({ id });
+    if (!game) {
+      throw new NotFoundException('유효한 게임 id가 아닙니다.');
+    }
     return this.gameRepository.addOrRemoveLike(game, user);
+  }
+
+  async search(
+    limit: number,
+    offset: number,
+    keyword: string,
+  ): Promise<{ totalCount: number; data: Game[] }> {
+    const totalCount = await this.gameRepository
+      .createQueryBuilder('game')
+      .innerJoin('game.user', 'user')
+      .where(`game.title like :keyword`, { keyword: `%${keyword}%` })
+      .orWhere(`user.nickname like :keyword`, { keyword: `%${keyword}%` })
+      .getCount();
+    const data = await this.gameRepository
+      .createQueryBuilder('game')
+      .innerJoin('game.user', 'user')
+      .where(`game.title like :keyword`, { keyword: `%${keyword}%` })
+      .orWhere(`user.nickname like :keyword`, { keyword: `%${keyword}%` })
+      .limit(limit)
+      .offset(offset)
+      .getMany();
+    return { totalCount, data };
   }
 }

@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Delete,
+  forwardRef,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
@@ -17,10 +19,12 @@ import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
 import { GameService } from './game.service';
+
 @Controller('game')
 export class GameController {
   constructor(
     private gameService: GameService,
+    @Inject(forwardRef(() => ProjectsService))
     private projectsService: ProjectsService,
   ) {}
 
@@ -40,6 +44,16 @@ export class GameController {
     const limit = 5;
     const offset = page ? (Number(page) - 1) * limit : 0;
     return this.gameService.getGames(limit, offset);
+  }
+
+  @Get('/search')
+  search(
+    @Query('keyword') keyword: string,
+    @Query('page') page: string,
+  ): Promise<{ totalCount: number; data: Game[] }> {
+    const limit = 5;
+    const offset = page ? (Number(page) - 1) * limit : 0;
+    return this.gameService.search(limit, offset, keyword);
   }
 
   @Get('/:id')

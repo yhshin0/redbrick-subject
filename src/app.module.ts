@@ -9,6 +9,7 @@ import { GameModule } from './game/game.module';
 import { AuthModule } from './auth/auth.module';
 import { MemoryCacheModule } from './cache/cache.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { Connection } from 'typeorm';
 
 @Module({
   imports: [
@@ -32,4 +33,6 @@ import { ScheduleModule } from '@nestjs/schedule';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private connection: Connection) {}
+}
