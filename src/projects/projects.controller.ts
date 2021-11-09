@@ -54,8 +54,9 @@ export class ProjectsController {
   updateProject(
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
+    @GetUser() user: User,
   ): Promise<Project> {
-    return this.projectsService.update(+id, updateProjectDto);
+    return this.projectsService.update(+id, updateProjectDto, user);
   }
 
   @Delete('/:id')

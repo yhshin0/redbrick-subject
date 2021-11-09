@@ -36,7 +36,7 @@ export class User extends CoreEntity {
   }
 
   @OneToMany((_type) => Project, (project) => project.user, {
-    eager: true,
+    eager: false,
     cascade: true,
   })
   projects: Project[];

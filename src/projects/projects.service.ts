@@ -1,7 +1,9 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
@@ -68,8 +70,17 @@ export class ProjectsService {
   async update(
     id: number,
     updateProjectDto: UpdateProjectDto,
+    user: User,
   ): Promise<Project> {
+    if (Object.keys(updateProjectDto).length === 0) {
+      throw new BadRequestException('요청하신 수정 값이 잘못되었습니다');
+    }
+
     const project = await this.findOne(id);
+    if (project.user.id !== user.id) {
+      throw new UnauthorizedException('해당 프로젝트를 작성한 유저가 아닙니다');
+    }
+
     project.title = updateProjectDto.title;
     project.code = updateProjectDto.code;
     project.isPublished = updateProjectDto.isPublished;
