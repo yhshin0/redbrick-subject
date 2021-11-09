@@ -21,7 +21,7 @@ export class UsersService {
     password,
     nickname,
   }: CreateUserDto): Promise<User> {
-    const existUser = this.usersRepository.findOne({ email });
+    const existUser = await this.usersRepository.findOne({ email });
     if (existUser) {
       throw new ConflictException('이미 가입된 이메일입니다.');
     }
