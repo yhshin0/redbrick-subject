@@ -60,7 +60,10 @@ export class ProjectsController {
   }
 
   @Delete('/:id')
-  deleteProject(@Param('id') id: string): Promise<Project> {
-    return this.projectsService.delete(+id);
+  deleteProject(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<Project> {
+    return this.projectsService.delete(+id, user);
   }
 }

@@ -87,8 +87,12 @@ export class ProjectsService {
     return await this.projectRepository.save(project);
   }
 
-  async delete(id: number): Promise<Project> {
+  async delete(id: number, user: User): Promise<Project> {
     const project = await this.findOne(id);
+    if (project.user.id !== user.id) {
+      throw new UnauthorizedException('해당 프로젝트를 작성한 유저가 아닙니다');
+    }
+
     await this.projectRepository.softDelete({ id });
     return project;
   }
