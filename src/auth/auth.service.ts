@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import * as bcrypt from 'bcrypt';
 
@@ -31,9 +31,8 @@ export class AuthService {
     }
   }
 
-  async signout(loginUserDto: LoginUserDto): Promise<void> {
-    const { email } = loginUserDto;
-    const user = await this.usersService.findOne(email);
+  async signOut(user) {
+    console.log('sign out');
     await this.usersService.updateLoginedAt(user.email, null);
   }
 }
