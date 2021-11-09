@@ -7,6 +7,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { GameModule } from './game/game.module';
 import { AuthModule } from './auth/auth.module';
+import { Connection } from 'typeorm';
 
 @Module({
   imports: [
@@ -28,4 +29,6 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private connection: Connection) {}
+}

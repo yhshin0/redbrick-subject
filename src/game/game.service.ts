@@ -49,6 +49,23 @@ export class GameService {
     return game;
   }
 
+  async getGameByProjectId(project: Project): Promise<Game> {
+    const game = await this.gameRepository.findOne({
+      where: { project },
+      withDeleted: true,
+    });
+
+    if (!game) {
+      throw new NotFoundException('유효한 게임 id가 아닙니다.');
+    }
+
+    return game;
+  }
+
+  async restoreGame(id: number): Promise<void> {
+    await this.gameRepository.restore(id);
+  }
+
   async updateGame(
     id: number,
     updateGameDto: UpdateGameDto,
