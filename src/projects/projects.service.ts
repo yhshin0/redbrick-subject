@@ -1,9 +1,12 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -17,10 +20,13 @@ export class ProjectsService {
     private readonly projectRepository: Repository<Project>,
   ) {}
 
-  async createProject(createProjectDto: CreateProjectDto): Promise<Project> {
+  async createProject(
+    createProjectDto: CreateProjectDto,
+    user: User,
+  ): Promise<Project> {
     try {
       return await this.projectRepository.save(
-        this.projectRepository.create(createProjectDto),
+        this.projectRepository.create({ ...createProjectDto, user }),
       );
     } catch (error) {
       throw new InternalServerErrorException(
@@ -32,12 +38,21 @@ export class ProjectsService {
   async findAll({
     take,
     skip,
+    user,
   }: {
     take: number;
     skip: number;
+    user: User;
   }): Promise<IFindAllResponse> {
-    const totalCount = await this.projectRepository.count();
-    const data = await this.projectRepository.find({ skip, take });
+    // 로그인한 유저의 프로젝트만 볼 수 있도록 where절 사용
+    const totalCount = await this.projectRepository.count({
+      where: { user },
+    });
+    const data = await this.projectRepository.find({
+      skip,
+      take,
+      where: { user },
+    });
     return {
       totalCount,
       data,
@@ -55,16 +70,29 @@ export class ProjectsService {
   async update(
     id: number,
     updateProjectDto: UpdateProjectDto,
+    user: User,
   ): Promise<Project> {
+    if (Object.keys(updateProjectDto).length === 0) {
+      throw new BadRequestException('요청하신 수정 값이 잘못되었습니다');
+    }
+
     const project = await this.findOne(id);
+    if (project.user.id !== user.id) {
+      throw new UnauthorizedException('해당 프로젝트를 작성한 유저가 아닙니다');
+    }
+
     project.title = updateProjectDto.title;
     project.code = updateProjectDto.code;
     project.isPublished = updateProjectDto.isPublished;
     return await this.projectRepository.save(project);
   }
 
-  async delete(id: number): Promise<Project> {
+  async delete(id: number, user: User): Promise<Project> {
     const project = await this.findOne(id);
+    if (project.user.id !== user.id) {
+      throw new UnauthorizedException('해당 프로젝트를 작성한 유저가 아닙니다');
+    }
+
     await this.projectRepository.softDelete({ id });
     return project;
   }

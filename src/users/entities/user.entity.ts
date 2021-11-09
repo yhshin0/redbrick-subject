@@ -1,4 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
+import { Project } from '../../projects/entities/project.entity';
 import {
   BeforeInsert,
   Column,
@@ -9,6 +10,7 @@ import {
 } from 'typeorm';
 import { CoreEntity } from '../../core/entities/core.entity';
 import * as bcrypt from 'bcrypt';
+import { Game } from '../../game/entities/game.entity';
 
 @Entity()
 export class User extends CoreEntity {
@@ -33,16 +35,22 @@ export class User extends CoreEntity {
       throw new InternalServerErrorException();
     }
   }
-  // 나중에 프로젝트, 게임 테이블 생성되면 주석해제
-  // @OneToMany((_type) => Project, (project) => project.user, {
-  //   eager: true,
-  //   cascade: true,
-  // })
-  // project: Project[];
 
-  // @ManyToMany((_type) => Game, (game) => game.users, {
-  //   cascade: true,
-  // })
-  // @JoinTable({ name: 'users_goods' })
-  // games: Game[];
+  @OneToMany((_type) => Project, (project) => project.user, {
+    eager: false,
+    cascade: true,
+  })
+  projects: Project[];
+
+  @OneToMany((_type) => Game, (game) => game.user, {
+    eager: false,
+    cascade: true,
+  })
+  games: Game[];
+
+  @ManyToMany((_type) => Game, (game) => game.likes, {
+    cascade: true,
+  })
+  @JoinTable({ name: 'users_likes' })
+  likes: Game[];
 }

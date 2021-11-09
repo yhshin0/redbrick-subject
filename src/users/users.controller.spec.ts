@@ -42,11 +42,21 @@ describe('UsersController', () => {
     projects: null,
     password: 'z',
     games: null,
+    likes: null,
   };
-  const createUser: CreateUserDto = {
-    email: 'test@g.com',
-    password: '123',
+  const createUser: User = {
+    id: 1,
+    email: 'test@gdfsadf.coffm',
     nickname: 'zz',
+    loginedAt: new Date(),
+    hashPassword: undefined,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+    projects: null,
+    password: 'z',
+    games: null,
+    likes: null,
   };
   describe('회원 생성', () => {
     it('회원가입 성공', async () => {
@@ -81,6 +91,7 @@ describe('UsersController', () => {
       projects: null,
       password: 'z',
       games: null,
+      likes: null,
     };
     const updateUserDto: UpdateUserDto = {
       password: '123',
