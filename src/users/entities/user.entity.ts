@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Project } from 'src/projects/entities/project.entity';
+import { Project } from '../../projects/entities/project.entity';
 import {
   BeforeInsert,
   Column,
@@ -26,7 +26,6 @@ export class User extends CoreEntity {
   @Column({ type: 'datetime', nullable: true })
   loginedAt: Date;
 
-
   //유저 생성시 암호화부분
   @BeforeInsert()
   async hashPassword(): Promise<void> {
@@ -48,7 +47,6 @@ export class User extends CoreEntity {
     cascade: true,
   })
   games: Game[];
-
 
   @ManyToMany((_type) => Game, (game) => game.likes, {
     cascade: true,
