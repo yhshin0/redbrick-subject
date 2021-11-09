@@ -36,12 +36,21 @@ export class ProjectsService {
   async findAll({
     take,
     skip,
+    user,
   }: {
     take: number;
     skip: number;
+    user: User;
   }): Promise<IFindAllResponse> {
-    const totalCount = await this.projectRepository.count();
-    const data = await this.projectRepository.find({ skip, take });
+    // 로그인한 유저의 프로젝트만 볼 수 있도록 where절 사용
+    const totalCount = await this.projectRepository.count({
+      where: { user },
+    });
+    const data = await this.projectRepository.find({
+      skip,
+      take,
+      where: { user },
+    });
     return {
       totalCount,
       data,
