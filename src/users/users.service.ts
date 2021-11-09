@@ -7,7 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -45,5 +47,21 @@ export class UsersService {
     const user = await this.findOne(email);
     user.loginedAt = loginedAt;
     await this.usersRepository.save(user);
+  }
+
+  async updateUser(email: string, updateUserDto: UpdateUserDto): Promise<User> {
+    const user: User = await this.usersRepository.findOne({ email });
+    const { nickname, password } = updateUserDto;
+
+    user.nickname = nickname;
+    user.password = await bcrypt.hash(password, 10);
+
+    try {
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        '회원 수정에 오류가 발생하였습니다.',
+      );
+    }
   }
 }

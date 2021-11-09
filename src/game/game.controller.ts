@@ -7,13 +7,16 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ProjectsService } from 'src/projects/projects.service';
+import { User } from 'src/users/entities/user.entity';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
 import { GameService } from './game.service';
-
 @Controller('game')
 export class GameController {
   constructor(
@@ -21,11 +24,15 @@ export class GameController {
     private projectsService: ProjectsService,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async createGame(@Body() createGameDto: CreateGameDto): Promise<Game> {
+  async createGame(
+    @Body() createGameDto: CreateGameDto,
+    @GetUser() user: User,
+  ): Promise<Game> {
     const { projectId } = createGameDto;
     const project = await this.projectsService.findOne(projectId);
-    return await this.gameService.createGame(createGameDto, project);
+    return await this.gameService.createGame(createGameDto, project, user);
   }
 
   @Get()
@@ -41,15 +48,30 @@ export class GameController {
   }
 
   @Patch('/:id')
+  @UseGuards(JwtAuthGuard)
   updateGame(
     @Param('id') id: string,
     @Body() updateGameDto: UpdateGameDto,
+    @GetUser() user: User,
   ): Promise<Game> {
-    return this.gameService.updateGame(Number(id), updateGameDto);
+    return this.gameService.updateGame(Number(id), updateGameDto, user);
   }
 
   @Delete('/:id')
-  deleteGameById(@Param('id') id: string): Promise<{ message: string }> {
-    return this.gameService.deleteGame(Number(id));
+  @UseGuards(JwtAuthGuard)
+  deleteGameById(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<{ message: string }> {
+    return this.gameService.deleteGame(Number(id), user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/likes/:id')
+  addOrRemoveLike(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<{ message: string }> {
+    return this.gameService.addOrRemoveLike(Number(id), user);
   }
 }
