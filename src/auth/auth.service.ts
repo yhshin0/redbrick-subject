@@ -22,7 +22,7 @@ export class AuthService {
       await this.userService.updateLoginedAt(email, loginedAt);
 
       // payload로 토큰 생성
-      const payload = { email };
+      const payload = { email, loginedAt };
       const accessToken = await this.jwtService.sign(payload);
 
       return { accessToken };
