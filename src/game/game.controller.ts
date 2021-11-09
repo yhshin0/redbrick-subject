@@ -8,6 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ProjectsService } from 'src/projects/projects.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
@@ -15,11 +16,16 @@ import { GameService } from './game.service';
 
 @Controller('game')
 export class GameController {
-  constructor(private gameService: GameService) {}
+  constructor(
+    private gameService: GameService,
+    private projectsService: ProjectsService,
+  ) {}
 
   @Post()
-  createGame(@Body() createGameDto: CreateGameDto): Promise<Game> {
-    return this.gameService.createGame(createGameDto);
+  async createGame(@Body() createGameDto: CreateGameDto): Promise<Game> {
+    const { projectId } = createGameDto;
+    const project = await this.projectsService.findOne(projectId);
+    return await this.gameService.createGame(createGameDto, project);
   }
 
   @Get()
