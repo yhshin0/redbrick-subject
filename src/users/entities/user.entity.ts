@@ -24,6 +24,7 @@ export class User extends CoreEntity {
   @Column({ type: 'datetime', nullable: true })
   loginedAt: Date;
 
+  //유저 생성시 암호화부분
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     try {
