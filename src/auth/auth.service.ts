@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import * as bcrypt from 'bcrypt';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -31,8 +32,9 @@ export class AuthService {
     }
   }
 
-  async signOut(user) {
-    console.log('sign out');
-    await this.usersService.updateLoginedAt(user.email, null);
+  async signOut(user: User) {
+    const { email } = user;
+    const result = await this.usersService.findOne(email);
+    await this.usersService.updateLoginedAt(result.email, null);
   }
 }
