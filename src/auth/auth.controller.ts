@@ -13,4 +13,10 @@ export class AuthController {
   signIn(@Body() loginUserDto: LoginUserDto): Promise<{ accessToken }> {
     return this.authService.signIn(loginUserDto);
   }
+
+  @Post('/signout')
+  async logout(@GetUser() user): Promise<{ message: string }> {
+    await this.authService.signout(user);
+    return { message: '로그아웃 되었습니다.' };
+  }
 }
