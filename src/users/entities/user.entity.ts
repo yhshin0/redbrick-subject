@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { CoreEntity } from '../../core/entities/core.entity';
 import * as bcrypt from 'bcrypt';
+import { Game } from '../../game/entities/game.entity';
 
 @Entity()
 export class User extends CoreEntity {
@@ -40,9 +41,9 @@ export class User extends CoreEntity {
   // })
   // project: Project[];
 
-  // @ManyToMany((_type) => Game, (game) => game.users, {
-  //   cascade: true,
-  // })
-  // @JoinTable({ name: 'users_goods' })
-  // games: Game[];
+  @ManyToMany((_type) => Game, (game) => game.likes, {
+    cascade: true,
+  })
+  @JoinTable({ name: 'users_goods' })
+  games: Game[];
 }
