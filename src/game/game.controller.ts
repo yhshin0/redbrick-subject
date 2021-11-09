@@ -7,8 +7,12 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ProjectsService } from 'src/projects/projects.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { User } from '../users/entities/user.entity';
+import { GetUser } from '../auth/get-user.decorator';
+import { ProjectsService } from '../projects/projects.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
@@ -51,5 +55,14 @@ export class GameController {
   @Delete('/:id')
   deleteGameById(@Param('id') id: string): Promise<{ message: string }> {
     return this.gameService.deleteGame(Number(id));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/likes/:id')
+  addOrRemoveLike(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<{ message: string }> {
+    return this.gameService.addOrRemoveLike(Number(id), user);
   }
 }

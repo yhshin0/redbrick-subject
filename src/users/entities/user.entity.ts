@@ -1,7 +1,15 @@
-import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import { InternalServerErrorException } from '@nestjs/common';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
 import { CoreEntity } from '../../core/entities/core.entity';
 import * as bcrypt from 'bcrypt';
-import { InternalServerErrorException } from '@nestjs/common';
+import { Game } from '../../game/entities/game.entity';
 
 @Entity()
 export class User extends CoreEntity {
@@ -17,6 +25,8 @@ export class User extends CoreEntity {
   @Column({ type: 'datetime', nullable: true })
   loginedAt: Date;
 
+
+  //유저 생성시 암호화부분
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     try {
@@ -33,9 +43,9 @@ export class User extends CoreEntity {
   // })
   // project: Project[];
 
-  // @ManyToMany((_type) => Game, (game) => game.users, {
-  //   cascade: true,
-  // })
-  // @JoinTable({ name: 'users_goods' })
-  // games: Game[];
+  @ManyToMany((_type) => Game, (game) => game.likes, {
+    cascade: true,
+  })
+  @JoinTable({ name: 'users_goods' })
+  games: Game[];
 }
