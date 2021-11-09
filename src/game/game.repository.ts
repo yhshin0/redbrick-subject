@@ -53,4 +53,25 @@ export class GameRepository extends Repository<Game> {
       throw new InternalServerErrorException();
     }
   }
+
+  async findOneGame(id: number) {
+    const game = await this.createQueryBuilder('game')
+      .loadRelationCountAndMap('game.likeCount', 'game.likes')
+      .leftJoin('game.likes', 'likes')
+      .addSelect('likes.email')
+      .where('game.id = :id', { id: id })
+      .getOne();
+    return game;
+  }
+
+  async findGames(limit: number, offset: number): Promise<Game[]> {
+    const game = await this.createQueryBuilder('game')
+      .leftJoin('game.likes', 'likes')
+      .addSelect('likes.email')
+      .limit(limit)
+      .offset(offset)
+      .loadRelationCountAndMap('game.likeCount', 'game.likes')
+      .getMany();
+    return game;
+  }
 }

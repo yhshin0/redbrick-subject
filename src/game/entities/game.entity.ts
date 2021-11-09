@@ -31,7 +31,6 @@ export class Game extends CoreEntity {
   project: Project;
 
   @ManyToOne((_type) => User, (user) => user.games, {
-    eager: true,
     onDelete: 'CASCADE',
   })
   user: User;
