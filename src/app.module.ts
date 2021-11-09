@@ -7,6 +7,8 @@ import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { GameModule } from './game/game.module';
 import { AuthModule } from './auth/auth.module';
+import { MemoryCacheModule } from './cache/cache.module';
+import { ScheduleModule } from '@nestjs/schedule';
 import { Connection } from 'typeorm';
 
 @Module({
@@ -21,10 +23,12 @@ import { Connection } from 'typeorm';
       entities: [__dirname + '/**/entities/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    ScheduleModule.forRoot(),
     ProjectsModule,
     UsersModule,
     GameModule,
     AuthModule,
+    MemoryCacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],

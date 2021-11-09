@@ -7,7 +7,7 @@ export class Project extends CoreEntity {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ nullable: true })
   code: string;
 
   @Column({ type: Boolean, default: false })
