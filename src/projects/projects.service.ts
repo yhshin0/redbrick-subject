@@ -90,9 +90,8 @@ export class ProjectsService {
       this.schedulerRegistry.deleteTimeout(`porject-timer-${id}`);
     }
 
-    await this.cacheService.set(`porject-${id}`, updateProjectDto );
+    await this.cacheService.set(`porject-${id}`, updateProjectDto);
     const cacheData = await this.cacheService.get(`porject-${id}`);
-
     this.schedulerRegistry.addTimeout(
       `porject-timer-${id}`,
       setTimeout(async () => {

@@ -3,8 +3,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { CacheService } from '../cache/cache.service';
 import { Repository } from 'typeorm';
 
 import { User } from '../users/entities/user.entity';
@@ -20,11 +22,21 @@ const mockProjectsRepository = () => ({
   softDelete: jest.fn(),
 });
 
+const mockSchedulerRegistry = () => ({
+  getTimeouts: jest.fn(),
+  deleteTimeout: jest.fn(),
+  addTimeout: jest.fn(),
+});
+
+jest.mock('../cache/cache.service');
+
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('ProjectsService', () => {
   let service: ProjectsService;
   let projectRepository: MockRepository<Project>;
+  let cacheService: CacheService;
+  let schedulerRegistry: SchedulerRegistry;
 
   const user = new User();
   user.id = 1;
@@ -33,10 +45,12 @@ describe('ProjectsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProjectsService,
+        CacheService,
         {
           provide: getRepositoryToken(Project),
           useValue: mockProjectsRepository(),
         },
+        { provide: SchedulerRegistry, useValue: mockSchedulerRegistry() },
       ],
     }).compile();
 
@@ -44,6 +58,8 @@ describe('ProjectsService', () => {
     projectRepository = module.get<MockRepository<Project>>(
       getRepositoryToken(Project),
     );
+    cacheService = module.get<CacheService>(CacheService);
+    schedulerRegistry = module.get<SchedulerRegistry>(SchedulerRegistry);
   });
 
   it('should be defined', () => {
@@ -134,7 +150,6 @@ describe('ProjectsService', () => {
 
     describe('update', () => {
       it('프로젝트 수정에 성공한다', async () => {
-        expect.assertions(4);
         const id = 1;
         const updateIsPublished = true;
         const updateProjectDto = { isPublished: updateIsPublished };
@@ -147,14 +162,17 @@ describe('ProjectsService', () => {
         project.user = user;
         projectRepository.findOne.mockResolvedValue(project);
 
-        project.isPublished = updateIsPublished;
-        projectRepository.save.mockResolvedValue(project);
+        jest.spyOn(schedulerRegistry, 'getTimeouts').mockReturnValue([]);
+
+        jest.spyOn(cacheService, 'set').mockResolvedValue();
+        const cacheData = { title: 'updatedTitle' };
+        jest.spyOn(cacheService, 'get').mockResolvedValue(cacheData);
+
+        jest.spyOn(schedulerRegistry, 'addTimeout').mockReturnValue();
+        jest.spyOn(global, 'setTimeout').mockReturnValue(null);
 
         const expectProject = await service.update(id, updateProjectDto, user);
-        expect(expectProject.id).toEqual(project.id);
-        expect(expectProject.title).toEqual(project.title);
-        expect(expectProject.code).toEqual(project.code);
-        expect(expectProject.isPublished).toEqual(project.isPublished);
+        expect(expectProject.title).toEqual(cacheData.title);
       });
 
       it('수정하려는 값이 없기 때문에 프로젝트 수정에 실패한다', async () => {
