@@ -34,6 +34,13 @@ export class User extends CoreEntity {
       throw new InternalServerErrorException();
     }
   }
+
+  @OneToMany((_type) => Game, (game) => game.user, {
+    eager: false,
+    cascade: true,
+  })
+  games: Game[];
+
   // 나중에 프로젝트, 게임 테이블 생성되면 주석해제
   // @OneToMany((_type) => Project, (project) => project.user, {
   //   eager: true,
@@ -44,6 +51,6 @@ export class User extends CoreEntity {
   @ManyToMany((_type) => Game, (game) => game.likes, {
     cascade: true,
   })
-  @JoinTable({ name: 'users_goods' })
-  games: Game[];
+  @JoinTable({ name: 'users_likes' })
+  likes: Game[];
 }
