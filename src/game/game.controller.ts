@@ -46,6 +46,16 @@ export class GameController {
     return this.gameService.getGames(limit, offset);
   }
 
+  @Get('/search')
+  search(
+    @Query('keyword') keyword: string,
+    @Query('page') page: string,
+  ): Promise<{ totalCount: number; data: Game[] }> {
+    const limit = 5;
+    const offset = page ? (Number(page) - 1) * limit : 0;
+    return this.gameService.search(limit, offset, keyword);
+  }
+
   @Get('/:id')
   getGameById(@Param('id') id: string): Promise<Game> {
     return this.gameService.getGameById(Number(id), true);
