@@ -80,9 +80,13 @@ export class GameService {
     return this.gameRepository.addOrRemoveLike(game, user);
   }
 
-  search(keyword: string): Promise<Game[]> {
-    return this.gameRepository.find({
-      where: [{ title: Like(`%${keyword}%`) }],
-    });
+  async search(keyword: string): Promise<Game[]> {
+    const result = await this.gameRepository
+      .createQueryBuilder('game')
+      .innerJoin('game.user', 'user')
+      .where(`game.title like :keyword`, { keyword: `%${keyword}%` })
+      .orWhere(`user.nickname like :keyword`, { keyword: `%${keyword}%` })
+      .getMany();
+    return result;
   }
 }
