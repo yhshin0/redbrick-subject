@@ -14,7 +14,7 @@ export class AuthService {
   async signIn(loginUserDto: LoginUserDto): Promise<{ accessToken: string }> {
     const { email, password } = loginUserDto;
     const user = await this.userService.findOne(email);
-    console.log(user);
+
     // 로그인한 유저 비밀번호와 디비에 저장된 비밀번호 비교
     if (user && (await bcrypt.compare(password, user.password))) {
       // 유저 로그인 시각 갱신
