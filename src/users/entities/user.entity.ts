@@ -1,4 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
+import { Project } from 'src/projects/entities/project.entity';
 import {
   BeforeInsert,
   Column,
@@ -35,18 +36,18 @@ export class User extends CoreEntity {
     }
   }
 
+  @OneToMany((_type) => Project, (project) => project.user, {
+    eager: false,
+    cascade: true,
+  })
+  projects: Project[];
+
   @OneToMany((_type) => Game, (game) => game.user, {
     eager: false,
     cascade: true,
   })
   games: Game[];
 
-  // 나중에 프로젝트, 게임 테이블 생성되면 주석해제
-  // @OneToMany((_type) => Project, (project) => project.user, {
-  //   eager: true,
-  //   cascade: true,
-  // })
-  // project: Project[];
 
   @ManyToMany((_type) => Game, (game) => game.likes, {
     cascade: true,
