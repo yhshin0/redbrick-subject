@@ -6,18 +6,22 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CacheService } from '../cache/cache.service';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
 import { IFindAllResponse } from './projects.interface';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
+    private readonly cacheService: CacheService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   async createProject(
@@ -71,7 +75,7 @@ export class ProjectsService {
     id: number,
     updateProjectDto: UpdateProjectDto,
     user: User,
-  ): Promise<Project> {
+  ): Promise<any> {
     if (Object.keys(updateProjectDto).length === 0) {
       throw new BadRequestException('요청하신 수정 값이 잘못되었습니다');
     }
@@ -81,10 +85,24 @@ export class ProjectsService {
       throw new UnauthorizedException('해당 프로젝트를 작성한 유저가 아닙니다');
     }
 
-    project.title = updateProjectDto.title;
-    project.code = updateProjectDto.code;
-    project.isPublished = updateProjectDto.isPublished;
-    return await this.projectRepository.save(project);
+    const timeouts = this.schedulerRegistry.getTimeouts();
+    if (timeouts.includes(`porject-timer-${id}`)) {
+      this.schedulerRegistry.deleteTimeout(`porject-timer-${id}`);
+    }
+
+    await this.cacheService.set(`porject-${id}`, updateProjectDto );
+    const cacheData = await this.cacheService.get(`porject-${id}`);
+
+    this.schedulerRegistry.addTimeout(
+      `porject-timer-${id}`,
+      setTimeout(async () => {
+        project.title = cacheData.title;
+        project.code = cacheData.code;
+        project.isPublished = cacheData.isPublished;
+        await this.projectRepository.save(project);
+      }, 1000 * 60),
+    );
+    return cacheData;
   }
 
   async delete(id: number, user: User): Promise<Project> {
