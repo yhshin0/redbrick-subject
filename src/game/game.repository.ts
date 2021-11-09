@@ -56,9 +56,11 @@ export class GameRepository extends Repository<Game> {
 
   async findOneGame(id: number) {
     const game = await this.createQueryBuilder('game')
-      .loadRelationCountAndMap('game.likeCount', 'game.likes')
       .leftJoin('game.likes', 'likes')
+      .leftJoin('game.user', 'user')
+      .addSelect('user.nickname')
       .addSelect('likes.email')
+      .loadRelationCountAndMap('game.likeCount', 'game.likes')
       .where('game.id = :id', { id: id })
       .getOne();
     return game;
@@ -67,6 +69,8 @@ export class GameRepository extends Repository<Game> {
   async findGames(limit: number, offset: number): Promise<Game[]> {
     const game = await this.createQueryBuilder('game')
       .leftJoin('game.likes', 'likes')
+      .leftJoin('game.user', 'user')
+      .addSelect('user.nickname')
       .addSelect('likes.email')
       .limit(limit)
       .offset(offset)
