@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Project } from 'src/projects/entities/project.entity';
+import { Project } from '../../projects/entities/project.entity';
 import {
   BeforeInsert,
   Column,
@@ -48,7 +48,6 @@ export class User extends CoreEntity {
     cascade: true,
   })
   games: Game[];
-
 
   @ManyToMany((_type) => Game, (game) => game.likes, {
     cascade: true,
