@@ -51,7 +51,7 @@ export class GameController {
     @Query('keyword') keyword: string,
     @Query('page') page: string,
   ): Promise<{ totalCount: number; data: Game[] }> {
-    const limit = 1;
+    const limit = 5;
     const offset = page ? (Number(page) - 1) * limit : 0;
     return this.gameService.search(limit, offset, keyword);
   }
