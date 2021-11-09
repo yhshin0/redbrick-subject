@@ -1,6 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, Post } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -8,8 +7,15 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async createUser(@Body() createBody: CreateUserDto): Promise<User> {
-    return await this.usersService.createUser(createBody);
+  async createUser(@Body() createBody: CreateUserDto) {
+    const result = await this.usersService.createUser(createBody);
+    if (result.ok) {
+      return {
+        message: '회원가입에 성공하였습니다.',
+      };
+    } else {
+      throw new HttpException(result.error, result.htmlStatus);
+    }
   }
 }
 

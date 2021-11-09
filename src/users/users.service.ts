@@ -39,4 +39,11 @@ export class UsersService {
   async findOne(email: string): Promise<User> {
     return await this.usersRepository.findOne({ email });
   }
+
+  // 로그인한 유저 시각 갱신
+  async updateLoginedAt(email: string, loginedAt: Date): Promise<void> {
+    const user = await this.findOne(email);
+    user.loginedAt = loginedAt;
+    await this.usersRepository.save(user);
+  }
 }
