@@ -18,11 +18,11 @@ import { Project } from './entities/project.entity';
 import { IFindAllResponse } from './projects.interface';
 import { ProjectsService } from './projects.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post()
   createProject(
     @Body() createProjectDto: CreateProjectDto,
