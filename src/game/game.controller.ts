@@ -65,4 +65,13 @@ export class GameController {
   ): Promise<{ message: string }> {
     return this.gameService.deleteGame(Number(id), user);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/likes/:id')
+  addOrRemoveLike(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<{ message: string }> {
+    return this.gameService.addOrRemoveLike(Number(id), user);
+  }
 }

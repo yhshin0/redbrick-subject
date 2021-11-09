@@ -1,7 +1,14 @@
 import { CoreEntity } from '../../core/entities/core.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
-import { Project } from 'src/projects/entities/project.entity';
-import { User } from 'src/users/entities/user.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  ManyToMany,
+  OneToOne,
+} from 'typeorm';
+import { Project } from '../../projects/entities/project.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Game extends CoreEntity {
@@ -28,4 +35,7 @@ export class Game extends CoreEntity {
     onDelete: 'CASCADE',
   })
   user: User;
+
+  @ManyToMany((_type) => User, (users) => users.likes, { eager: true })
+  likes: User[];
 }
