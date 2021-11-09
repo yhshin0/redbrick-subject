@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { GameModule } from './game/game.module';
 import { AuthModule } from './auth/auth.module';
@@ -19,6 +20,7 @@ import { AuthModule } from './auth/auth.module';
       entities: [__dirname + '/**/entities/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    ProjectsModule,
     UsersModule,
     GameModule,
     AuthModule,
