@@ -53,7 +53,7 @@
 
 | 이름   | 외부링크                                                                                                                                        | 담당 기능                                                   |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| 이현준 | [깃허브](https://github.com/lhj0621)/[블로그](https://supiz.tistory.com/)                                                                       | 총괄, 게임 CRUD, 프로젝트 실시간 저장 기능, 헤로쿠 배포     |
+| 이현준(조장) | [깃허브](https://github.com/lhj0621)/[블로그](https://supiz.tistory.com/)                                                                       | 총괄, 게임 CRUD, 프로젝트 실시간 저장 기능, 헤로쿠 배포     |
 | 김태련 | [깃허브](https://github.com/nojamcode)/[블로그](https://velog.io/@code-link)                                                                    | 유저 수정, 로그인, 로그인 인증, 유닛테스트                  |
 | 신영학 | [깃허브](https://github.com/yhshin0)/[블로그](https://nbkw.tistory.com/)                                                                        | 프로젝트 테이블 CRUD, 게임 검색, 게임 퍼블리싱, 유닛 테스트 |
 | 임유라 | [깃허브](https://github.com/BangleCoding)/[블로그](https://banglecoding.github.io/)                                                             | 유저 생성, 로그아웃, 유닛 테스트, README 작성               |
@@ -116,19 +116,26 @@
 - 좋아요 했던 게임을 취소하는 것이 가능합니다.
 - 유저의 nickname 이나 game의 title로 게임을 검색할 수 있도록 구현했습니다. 목록으로 출력하며, 페이지네이션으로 한 페이지당 5개씩 출력합니다.
 
+### Architecture
+![redbrick-architecture](https://user-images.githubusercontent.com/42320464/140992108-5c6a77ae-df8e-42f3-957b-8e6078953353.jpg)
+1. 클라이언트는 프로젝트 조회 요청 후 현재 데이터 Local Storage 저장
+1. 클라이언트 프로젝트 수정 시 Local Storage 값과 비교하여 다르면 서버에게 프로젝트 업데이트 요청
+1. 서버는 cache에 데이터 임시 저장 후 값을 임시 저장 값 응답
+1. 클라이언트 요청이 특정 시간 이상 없을 시 가장 최근 임시 저장된 값을 가져와 DB 반영
+
 ## API 문서
 
 <!-- TODO -->
 
-API 테스트를 위한 방법을 [POSTMAN document]()에서 확인하실 수 있습니다.
+API 테스트를 위한 방법을 [POSTMAN document](https://documenter.getpostman.com/view/15323948/UVC5F7xT)에서 확인하실 수 있습니다.
 
 ## 배포
 
 <!-- TODO -->
 
-Heroku를 이용해 배포를 진행했으며, 사이트의 주소는 [http://](http://) 입니다.
+Heroku를 이용해 배포를 진행했으며, 사이트의 주소는 [https://pocky-redbrick-subject.herokuapp.com/](https://pocky-redbrick-subject.herokuapp.com/) 입니다.
 
-**차후 수정 요망 **
+
 
 ## 설치 및 실행 방법
 
