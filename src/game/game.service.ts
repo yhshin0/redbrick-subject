@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Project } from 'src/projects/entities/project.entity';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
@@ -21,8 +22,8 @@ export class GameService {
     return await this.gameRepository.find({ skip: offset, take: limit });
   }
 
-  createGame(createGameDto: CreateGameDto): Promise<Game> {
-    return this.gameRepository.createGame(createGameDto);
+  createGame(createGameDto: CreateGameDto, project: Project): Promise<Game> {
+    return this.gameRepository.createGame(createGameDto, project);
   }
 
   async getGameById(id: number, addViewCount = false): Promise<Game> {
