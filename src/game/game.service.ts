@@ -8,6 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from '../projects/entities/project.entity';
 import { User } from '../users/entities/user.entity';
+import { Like } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
@@ -77,5 +78,11 @@ export class GameService {
   async addOrRemoveLike(id: number, user: User): Promise<{ message: string }> {
     const game = await this.getGameById(id);
     return this.gameRepository.addOrRemoveLike(game, user);
+  }
+
+  search(keyword: string): Promise<Game[]> {
+    return this.gameRepository.find({
+      where: [{ title: Like(`%${keyword}%`) }],
+    });
   }
 }
