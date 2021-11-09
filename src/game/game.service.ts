@@ -13,6 +13,7 @@ import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
 import { GameRepository } from './game.repository';
+import { skip, take } from 'rxjs';
 
 @Injectable()
 export class GameService {
@@ -100,13 +101,25 @@ export class GameService {
     return this.gameRepository.addOrRemoveLike(game, user);
   }
 
-  async search(keyword: string): Promise<Game[]> {
-    const result = await this.gameRepository
+  async search(
+    limit: number,
+    offset: number,
+    keyword: string,
+  ): Promise<{ totalCount: number; data: Game[] }> {
+    const totalCount = await this.gameRepository
       .createQueryBuilder('game')
       .innerJoin('game.user', 'user')
       .where(`game.title like :keyword`, { keyword: `%${keyword}%` })
       .orWhere(`user.nickname like :keyword`, { keyword: `%${keyword}%` })
+      .getCount();
+    const data = await this.gameRepository
+      .createQueryBuilder('game')
+      .innerJoin('game.user', 'user')
+      .where(`game.title like :keyword`, { keyword: `%${keyword}%` })
+      .orWhere(`user.nickname like :keyword`, { keyword: `%${keyword}%` })
+      .limit(limit)
+      .offset(offset)
       .getMany();
-    return result;
+    return { totalCount, data };
   }
 }
