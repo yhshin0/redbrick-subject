@@ -1,5 +1,6 @@
 import { CoreEntity } from '../../core/entities/core.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity()
 export class Project extends CoreEntity {
@@ -12,10 +13,9 @@ export class Project extends CoreEntity {
   @Column({ type: Boolean, default: false })
   isPublished: boolean;
 
-  // TODO: User 생성되면 연결할 것
-  // @ManyToOne((_type) => User, (user) => user.projects, {
-  //   eager: false,
-  //   onDelete: 'CASCADE',
-  // })
-  // userId: number;
+  @ManyToOne((_type) => User, (user) => user.projects, {
+    eager: false,
+    onDelete: 'CASCADE',
+  })
+  user: User;
 }

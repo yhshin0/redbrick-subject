@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -17,10 +18,13 @@ export class ProjectsService {
     private readonly projectRepository: Repository<Project>,
   ) {}
 
-  async createProject(createProjectDto: CreateProjectDto): Promise<Project> {
+  async createProject(
+    createProjectDto: CreateProjectDto,
+    user: User,
+  ): Promise<Project> {
     try {
       return await this.projectRepository.save(
-        this.projectRepository.create(createProjectDto),
+        this.projectRepository.create({ ...createProjectDto, user }),
       );
     } catch (error) {
       throw new InternalServerErrorException(
