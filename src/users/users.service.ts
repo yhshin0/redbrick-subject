@@ -30,7 +30,9 @@ export class UsersService {
 
     const user = this.usersRepository.create({ email, password, nickname });
     try {
-      return await this.usersRepository.save(user);
+      const result = await this.usersRepository.save(user);
+      delete result.password;
+      return result;
     } catch (error) {
       throw new InternalServerErrorException(
         '회원 가입에 오류가 발생하였습니다.',
@@ -45,6 +47,7 @@ export class UsersService {
   // 로그인한 유저 시각 갱신
   async updateLoginedAt(email: string, loginedAt: Date): Promise<void> {
     const user = await this.findOne(email);
+    delete user.password;
     user.loginedAt = loginedAt;
     await this.usersRepository.save(user);
   }
