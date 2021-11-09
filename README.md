@@ -65,7 +65,7 @@
 - 언어: TypeScript
 - 프레임워크: NestJs
 - 데이터베이스: SQLite3
-- 라이브러리: typeorm, passport, passport-local, passport-jwt, bcrypt, class-validator
+- 라이브러리: typeorm, passport, passport-jwt, bcrypt, class-validator, class-transformer, cache-manager, schedule
 
 ## ERD
 
@@ -144,7 +144,7 @@ Heroku를 이용해 배포를 진행했으며, 사이트의 주소는 [http://](
 
 - 배포일 경우: `npm run build`으로 애플리케이션을 빌드합니다. 그리고 `npm run start:prod`으로 실행합니다.
 
-- 4. POST `localhost:3000/users`에서 `email`, `password`, `role`("admin" 또는 "user")를 입력해 유저를 생성합니다.
+- 4. POST `localhost:3000/users`에서 `email`, `password`, `nickname`를 입력해 유저를 생성합니다.
 
 - 5. POST `localhost:3000/auth/signin`에 `email`, `password`을 입력하신 후 결과값으로 accessToken을 발급받습니다.
 
