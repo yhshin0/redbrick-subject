@@ -141,21 +141,17 @@ Heroku를 이용해 배포를 진행했으며, 사이트의 주소는 [https://p
 
 ### 공통
 
-- 1. 최상위 폴더에 `.env` 파일에 `JWT_SECRET`에 임의의 문자열을 작성해 저장합니다.
+1. 최상위 폴더에 `.env` 파일에 `JWT_SECRET`에 임의의 문자열을 작성해 저장합니다.
+1. `npm install`으로 패키지를 설치합니다.
+1. 테스트
+	- 개발일 경우: `npm run start`으로 `localhost:3000`에서 테스트하실 수 있습니다.
+	- 배포일 경우: `npm run build`으로 애플리케이션을 빌드합니다. 그리고 `npm run start:prod`으로 실행합니다.
+1. POST `localhost:3000/users`에서 `email`, `password`, `nickname`를 입력해 유저를 생성합니다.
+1. POST `localhost:3000/auth/signin`에 `email`, `password`을 입력하신 후 결과값으로 accessToken을 발급받습니다.
+1. 프로젝트 생성, 퍼블리싱 등 권한이 필요한 API의 주소를 입력한 후, Headers 의 Authorization에 accessToken을 붙여넣어 권한을 얻은 후 API를 호출합니다.
 
-- 2. `npm install`으로 패키지를 설치합니다.
-
-- 3. 테스트
-
-- 개발일 경우: `npm run start`으로 `localhost:3000`에서 테스트하실 수 있습니다.
-
-- 배포일 경우: `npm run build`으로 애플리케이션을 빌드합니다. 그리고 `npm run start:prod`으로 실행합니다.
-
-- 4. POST `localhost:3000/users`에서 `email`, `password`, `nickname`를 입력해 유저를 생성합니다.
-
-- 5. POST `localhost:3000/auth/signin`에 `email`, `password`을 입력하신 후 결과값으로 accessToken을 발급받습니다.
-
-- 6. 프로젝트 생성, 퍼블리싱 등 권한이 필요한 API의 주소를 입력한 후, Headers 의 Authorization에 accessToken을 붙여넣어 권한을 얻은 후 API를 호출합니다.
+## 테스트
+![image](https://user-images.githubusercontent.com/42320464/140993810-a6384238-6c6b-473a-8ab2-5b34ae13f96f.png)
 
 ## 폴더 구조
 
@@ -166,78 +162,86 @@ Heroku를 이용해 배포를 진행했으며, 사이트의 주소는 [https://p
 |   nest-cli.json
 |   package-lock.json
 |   package.json
+|   Procfile
 |   README.md
+|   tree.txt
 |   tsconfig.build.json
 |   tsconfig.json
-|
+|   
 +---.github
 |       PULL_REQUEST_TEMPLATE.md
-|
+|       
 +---src
 |   |   app.controller.spec.ts
 |   |   app.controller.ts
 |   |   app.module.ts
 |   |   app.service.ts
 |   |   main.ts
-|   |
+|   |   
 |   +---auth
 |   |   |   auth.controller.ts
 |   |   |   auth.module.ts
+|   |   |   auth.service.spec.ts
 |   |   |   auth.service.ts
 |   |   |   get-user.decorator.ts
 |   |   |   jwt-auth.guard.ts
 |   |   |   jwt.strategy.ts
-|   |   |
+|   |   |   
 |   |   \---dto
 |   |           login-user.dto.ts
-|   |
+|   |           
 |   +---cache
 |   |       cache.module.ts
 |   |       cache.service.ts
-|   |
+|   |       
 |   +---core
 |   |   \---entities
 |   |           core.entity.ts
-|   |
+|   |           
 |   +---game
 |   |   |   game.controller.ts
 |   |   |   game.module.ts
 |   |   |   game.repository.ts
+|   |   |   game.service.spec.ts
 |   |   |   game.service.ts
-|   |   |
+|   |   |   
 |   |   +---dto
 |   |   |       create-game.dto.ts
 |   |   |       update-game.dto.ts
-|   |   |
+|   |   |       
 |   |   \---entities
 |   |           game.entity.ts
-|   |
+|   |           
 |   +---projects
+|   |   |   projects.controller.spec.ts
 |   |   |   projects.controller.ts
 |   |   |   projects.interface.ts
 |   |   |   projects.module.ts
+|   |   |   projects.service.spec.ts
 |   |   |   projects.service.ts
-|   |   |
+|   |   |   
 |   |   +---dto
 |   |   |       create-project.dto.ts
 |   |   |       publish-project.dto.ts
 |   |   |       update-project.dto.ts
-|   |   |
+|   |   |       
 |   |   \---entities
 |   |           project.entity.ts
-|   |
+|   |           
 |   \---users
+|       |   user.service.spec.ts
+|       |   users.controller.spec.ts
 |       |   users.controller.ts
 |       |   users.module.ts
 |       |   users.service.ts
-|       |
+|       |   
 |       +---dto
 |       |       create-user.dto.ts
 |       |       update-user.dto.ts
-|       |
+|       |       
 |       \---entities
 |               user.entity.ts
-|
+|               
 \---test
         app.e2e-spec.ts
         jest-e2e.json
