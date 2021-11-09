@@ -11,10 +11,10 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { GetUser } from 'src/auth/get-user.decorator';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ProjectsService } from 'src/projects/projects.service';
-import { User } from 'src/users/entities/user.entity';
+import { GetUser } from '../auth/get-user.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ProjectsService } from '../projects/projects.service';
+import { User } from '../users/entities/user.entity';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
