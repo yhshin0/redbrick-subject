@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from 'src/projects/entities/project.entity';
+import { User } from 'src/users/entities/user.entity';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
@@ -22,8 +23,12 @@ export class GameService {
     return await this.gameRepository.find({ skip: offset, take: limit });
   }
 
-  createGame(createGameDto: CreateGameDto, project: Project): Promise<Game> {
-    return this.gameRepository.createGame(createGameDto, project);
+  createGame(
+    createGameDto: CreateGameDto,
+    project: Project,
+    user: User,
+  ): Promise<Game> {
+    return this.gameRepository.createGame(createGameDto, project, user);
   }
 
   async getGameById(id: number, addViewCount = false): Promise<Game> {
