@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 export class UpdateGameDto {
   @IsString()
@@ -12,4 +12,8 @@ export class UpdateGameDto {
   @IsString()
   @IsOptional()
   code: string;
+
+  @IsDate()
+  @IsOptional()
+  createdAt: Date;
 }

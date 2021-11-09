@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Delete,
+  forwardRef,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
@@ -21,6 +23,7 @@ import { GameService } from './game.service';
 export class GameController {
   constructor(
     private gameService: GameService,
+    @Inject(forwardRef(() => ProjectsService))
     private projectsService: ProjectsService,
   ) {}
 
