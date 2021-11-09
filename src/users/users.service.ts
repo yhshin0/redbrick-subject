@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -53,7 +54,7 @@ export class UsersService {
     const { nickname, password } = updateUserDto;
 
     user.nickname = nickname;
-    user.password = password;
+    user.password = await bcrypt.hash(password, 10);
 
     try {
       return await this.usersRepository.save(user);
