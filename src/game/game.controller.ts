@@ -48,15 +48,21 @@ export class GameController {
   }
 
   @Patch('/:id')
+  @UseGuards(JwtAuthGuard)
   updateGame(
     @Param('id') id: string,
     @Body() updateGameDto: UpdateGameDto,
+    @GetUser() user: User,
   ): Promise<Game> {
-    return this.gameService.updateGame(Number(id), updateGameDto);
+    return this.gameService.updateGame(Number(id), updateGameDto, user);
   }
 
   @Delete('/:id')
-  deleteGameById(@Param('id') id: string): Promise<{ message: string }> {
-    return this.gameService.deleteGame(Number(id));
+  @UseGuards(JwtAuthGuard)
+  deleteGameById(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<{ message: string }> {
+    return this.gameService.deleteGame(Number(id), user);
   }
 }
