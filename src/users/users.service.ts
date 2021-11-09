@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -12,31 +16,23 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async createUser({ email, password, nickname }: CreateUserDto): Promise<{
-    ok: boolean;
-    htmlStatus?: number;
-    error?: string;
-  }> {
-    try {
-      const existUser = this.usersRepository.findOne({ email });
-      if (existUser) {
-        return {
-          ok: false,
-          htmlStatus: 409,
-          error: '이미 가입된 이메일입니다.',
-        };
-      }
+  async createUser({
+    email,
+    password,
+    nickname,
+  }: CreateUserDto): Promise<User> {
+    const existUser = this.usersRepository.findOne({ email });
+    if (existUser) {
+      throw new ConflictException('이미 가입된 이메일입니다.');
+    }
 
-      await this.usersRepository.save(
-        this.usersRepository.create({ email, password, nickname }),
-      );
-      return { ok: true };
+    const user = this.usersRepository.create({ email, password, nickname });
+    try {
+      return await this.usersRepository.save(user);
     } catch (error) {
-      return {
-        ok: false,
-        htmlStatus: 500,
-        error: '유저 생성에 에러가 발생했습니다.',
-      };
+      throw new InternalServerErrorException(
+        '회원 가입에 오류가 발생하였습니다.',
+      );
     }
   }
 
