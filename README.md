@@ -160,4 +160,86 @@ Heroku를 이용해 배포를 진행했으며, 사이트의 주소는 [http://](
 
 ## 폴더 구조
 
-**차후 작성 요망** 
+```bash
+|   .eslintrc.js
+|   .gitignore
+|   .prettierrc
+|   nest-cli.json
+|   package-lock.json
+|   package.json
+|   README.md
+|   tsconfig.build.json
+|   tsconfig.json
+|
++---.github
+|       PULL_REQUEST_TEMPLATE.md
+|
++---src
+|   |   app.controller.spec.ts
+|   |   app.controller.ts
+|   |   app.module.ts
+|   |   app.service.ts
+|   |   main.ts
+|   |
+|   +---auth
+|   |   |   auth.controller.ts
+|   |   |   auth.module.ts
+|   |   |   auth.service.ts
+|   |   |   get-user.decorator.ts
+|   |   |   jwt-auth.guard.ts
+|   |   |   jwt.strategy.ts
+|   |   |
+|   |   \---dto
+|   |           login-user.dto.ts
+|   |
+|   +---cache
+|   |       cache.module.ts
+|   |       cache.service.ts
+|   |
+|   +---core
+|   |   \---entities
+|   |           core.entity.ts
+|   |
+|   +---game
+|   |   |   game.controller.ts
+|   |   |   game.module.ts
+|   |   |   game.repository.ts
+|   |   |   game.service.ts
+|   |   |
+|   |   +---dto
+|   |   |       create-game.dto.ts
+|   |   |       update-game.dto.ts
+|   |   |
+|   |   \---entities
+|   |           game.entity.ts
+|   |
+|   +---projects
+|   |   |   projects.controller.ts
+|   |   |   projects.interface.ts
+|   |   |   projects.module.ts
+|   |   |   projects.service.ts
+|   |   |
+|   |   +---dto
+|   |   |       create-project.dto.ts
+|   |   |       publish-project.dto.ts
+|   |   |       update-project.dto.ts
+|   |   |
+|   |   \---entities
+|   |           project.entity.ts
+|   |
+|   \---users
+|       |   users.controller.ts
+|       |   users.module.ts
+|       |   users.service.ts
+|       |
+|       +---dto
+|       |       create-user.dto.ts
+|       |       update-user.dto.ts
+|       |
+|       \---entities
+|               user.entity.ts
+|
+\---test
+        app.e2e-spec.ts
+        jest-e2e.json
+```
