@@ -1,3 +1,4 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import {
   BeforeInsert,
   Column,
@@ -6,9 +7,8 @@ import {
   ManyToMany,
   OneToMany,
 } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import { CoreEntity } from '../../core/entities/core.entity';
-import { InternalServerErrorException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class User extends CoreEntity {
@@ -33,7 +33,6 @@ export class User extends CoreEntity {
       throw new InternalServerErrorException();
     }
   }
-
   // 나중에 프로젝트, 게임 테이블 생성되면 주석해제
   // @OneToMany((_type) => Project, (project) => project.user, {
   //   eager: true,

@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateGameDto {
   @IsString()
@@ -10,4 +10,7 @@ export class CreateGameDto {
 
   @IsString()
   code: string;
+
+  @IsNumber()
+  projectId: number;
 }
