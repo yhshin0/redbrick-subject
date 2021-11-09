@@ -20,10 +20,6 @@ export class GameService {
     private gameRepository: GameRepository,
   ) {}
 
-  async getGames(limit: number, offset: number): Promise<Game[]> {
-    return await this.gameRepository.find({ skip: offset, take: limit });
-  }
-
   createGame(
     createGameDto: CreateGameDto,
     project: Project,
@@ -32,8 +28,12 @@ export class GameService {
     return this.gameRepository.createGame(createGameDto, project, user);
   }
 
+  getGames(limit: number, offset: number): Promise<Game[]> {
+    return this.gameRepository.findGames(limit, offset);
+  }
+
   async getGameById(id: number, addViewCount = false): Promise<Game> {
-    const game = await this.gameRepository.findOne({ id });
+    const game = await this.gameRepository.findOneGame(id);
     if (!game) {
       throw new NotFoundException('유효한 게임 id가 아닙니다.');
     }
@@ -75,7 +75,10 @@ export class GameService {
   }
 
   async addOrRemoveLike(id: number, user: User): Promise<{ message: string }> {
-    const game = await this.getGameById(id);
+    const game = await this.gameRepository.findOne({ id });
+    if (!game) {
+      throw new NotFoundException('유효한 게임 id가 아닙니다.');
+    }
     return this.gameRepository.addOrRemoveLike(game, user);
   }
 }
