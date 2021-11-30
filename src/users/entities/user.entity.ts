@@ -1,4 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+
 import { Project } from '../../projects/entities/project.entity';
 import {
   BeforeInsert,
@@ -9,7 +11,6 @@ import {
   OneToMany,
 } from 'typeorm';
 import { CoreEntity } from '../../core/entities/core.entity';
-import * as bcrypt from 'bcrypt';
 import { Game } from '../../game/entities/game.entity';
 
 @Entity()
