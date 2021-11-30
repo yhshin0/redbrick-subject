@@ -12,11 +12,12 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import { Connection } from 'typeorm';
+
 import { GetUser } from '../auth/get-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { User } from '../users/entities/user.entity';
 import { GameService } from '../game/game.service';
-import { Connection } from 'typeorm';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { PublishProjectDto } from './dto/publish-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';

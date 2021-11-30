@@ -5,15 +5,16 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CacheService } from '../cache/cache.service';
-import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { SchedulerRegistry } from '@nestjs/schedule';
+
+import { CacheService } from '../cache/cache.service';
+import { User } from '../users/entities/user.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
 import { IFindAllResponse } from './projects.interface';
-import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class ProjectsService {
