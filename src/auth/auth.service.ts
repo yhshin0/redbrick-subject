@@ -33,7 +33,7 @@ export class AuthService {
     }
   }
 
-  async signOut(user: User) {
+  async signOut(user: User): Promise<void> {
     const { email } = user;
     const result = await this.usersService.findOne(email);
     await this.usersService.updateLoginedAt(result.email, null);
