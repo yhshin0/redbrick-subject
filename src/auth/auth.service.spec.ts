@@ -1,15 +1,18 @@
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import * as bcrypt from 'bcrypt';
+
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
-import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
 
 jest.mock('../users/users.service');
+
 describe('AuthService', () => {
   let authService: AuthService;
   let usersService: UsersService;
   let jwtService: JwtService;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -18,16 +21,19 @@ describe('AuthService', () => {
         { provide: JwtService, useValue: { sign: jest.fn(() => 'TOKEN') } },
       ],
     }).compile();
+
     authService = module.get<AuthService>(AuthService);
     usersService = module.get<UsersService>(UsersService);
     jwtService = module.get<JwtService>(JwtService);
   });
+
   it('should be defined', () => {
     expect.assertions(3);
     expect(authService).toBeDefined();
     expect(usersService).toBeDefined();
     expect(jwtService).toBeDefined();
   });
+
   describe('login', () => {
     it('로그인: 성공', async () => {
       const findUser: User = {
