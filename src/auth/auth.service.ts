@@ -14,8 +14,10 @@ export class AuthService {
     private readonly usersService: UsersService,
   ) {}
 
-  async signIn(loginUserDto: LoginUserDto): Promise<{ accessToken: string }> {
-    const { email, password } = loginUserDto;
+  async signIn({
+    email,
+    password,
+  }: LoginUserDto): Promise<{ accessToken: string }> {
     const user = await this.usersService.findOne(email);
 
     // 로그인한 유저 비밀번호와 디비에 저장된 비밀번호 비교
@@ -34,8 +36,7 @@ export class AuthService {
     }
   }
 
-  async signOut(user: User): Promise<void> {
-    const { email } = user;
+  async signOut({ email }: User): Promise<void> {
     const result = await this.usersService.findOne(email);
     await this.usersService.updateLoginedAt(result.email, null);
   }
