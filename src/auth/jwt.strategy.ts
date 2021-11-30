@@ -5,6 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { AUTH_ERROR_MSG } from './auth.constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -27,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const userLoginedAt = new Date(user.loginedAt).getTime();
 
     if (!user || tokenLoginedAt !== userLoginedAt) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(AUTH_ERROR_MSG.INVALID_TOKEN);
     }
 
     return user;

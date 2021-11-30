@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { User } from '../users/entities/user.entity';
+import { AUTH_ERROR_MSG } from './auth.constants';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +30,7 @@ export class AuthService {
 
       return { accessToken };
     } else {
-      throw new UnauthorizedException('login fail');
+      throw new UnauthorizedException(AUTH_ERROR_MSG.LOGIN_FAIL);
     }
   }
 
