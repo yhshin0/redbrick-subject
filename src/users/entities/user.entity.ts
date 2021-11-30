@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { CoreEntity } from '../../core/entities/core.entity';
 import { Game } from '../../game/entities/game.entity';
+import { USER_CONSTANTS } from '../user.constants';
 
 @Entity()
 export class User extends CoreEntity {
@@ -31,7 +32,10 @@ export class User extends CoreEntity {
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     try {
-      this.password = await bcrypt.hash(this.password, 10);
+      this.password = await bcrypt.hash(
+        this.password,
+        USER_CONSTANTS.SALT_ROUND,
+      );
     } catch (e) {
       throw new InternalServerErrorException();
     }

@@ -10,6 +10,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { USER_CONSTANTS, USER_ERROR_MSG } from './user.constants';
 
 @Injectable()
 export class UsersService {
@@ -25,7 +26,7 @@ export class UsersService {
   }: CreateUserDto): Promise<User> {
     const existUser = await this.usersRepository.findOne({ email });
     if (existUser) {
-      throw new ConflictException('이미 가입된 이메일입니다.');
+      throw new ConflictException(USER_ERROR_MSG.EXISTED_EMAIL);
     }
 
     const user = this.usersRepository.create({ email, password, nickname });
@@ -35,7 +36,7 @@ export class UsersService {
       return result;
     } catch (error) {
       throw new InternalServerErrorException(
-        '회원 가입에 오류가 발생하였습니다.',
+        USER_ERROR_MSG.CREATE_INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -57,13 +58,13 @@ export class UsersService {
     const { nickname, password } = updateUserDto;
 
     user.nickname = nickname;
-    user.password = await bcrypt.hash(password, 10);
+    user.password = await bcrypt.hash(password, USER_CONSTANTS.SALT_ROUND);
 
     try {
       return await this.usersRepository.save(user);
     } catch (error) {
       throw new InternalServerErrorException(
-        '회원 수정에 오류가 발생하였습니다.',
+        USER_ERROR_MSG.UPDATE_INTERNAL_SERVER_ERROR,
       );
     }
   }
