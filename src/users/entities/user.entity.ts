@@ -37,19 +37,19 @@ export class User extends CoreEntity {
     }
   }
 
-  @OneToMany((_type) => Project, (project) => project.user, {
+  @OneToMany(() => Project, (project) => project.user, {
     eager: false,
     cascade: true,
   })
   projects: Project[];
 
-  @OneToMany((_type) => Game, (game) => game.user, {
+  @OneToMany(() => Game, (game) => game.user, {
     eager: false,
     cascade: true,
   })
   games: Game[];
 
-  @ManyToMany((_type) => Game, (game) => game.likes, {
+  @ManyToMany(() => Game, (game) => game.likes, {
     cascade: true,
   })
   @JoinTable({ name: 'users_likes' })
