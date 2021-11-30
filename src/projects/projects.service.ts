@@ -1,11 +1,13 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SchedulerRegistry } from '@nestjs/schedule';
 
@@ -15,6 +17,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
 import { IFindAllResponse } from './projects.interface';
+import { GameService } from '../game/game.service';
 
 @Injectable()
 export class ProjectsService {
@@ -23,6 +26,9 @@ export class ProjectsService {
     private readonly projectRepository: Repository<Project>,
     private readonly cacheService: CacheService,
     private schedulerRegistry: SchedulerRegistry,
+    @Inject(forwardRef(() => GameService))
+    private readonly gameService: GameService,
+    private connection: Connection,
   ) {}
 
   async createProject(
@@ -37,6 +43,54 @@ export class ProjectsService {
       throw new InternalServerErrorException(
         `Project 생성에 오류가 발생하였습니다.`,
       );
+    }
+  }
+
+  async publishProject(id, publishProjectDto, user) {
+    const queryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const project = await this.findOne(+id);
+
+      // user가 project 작성자인지 확인
+      if (project.user.id !== user.id) {
+        throw new UnauthorizedException('프로젝트의 작성자가 아닙니다');
+      }
+
+      if (!project.isPublished) {
+        // 게임이 없는 경우 게임 생성
+        const createGameDto = {
+          title: project.title,
+          ...publishProjectDto,
+          code: project.code,
+          projectId: project.id,
+        };
+        await this.gameService.createGame(createGameDto, project, user);
+      } else {
+        // 게임이 존재하는 경우 게임 수정
+        const game = await this.gameService.getGameByProjectId(project);
+        let updateGameDto;
+        updateGameDto = Object.assign(
+          {},
+          { title: project.title, code: project.code, ...publishProjectDto },
+        );
+        if (game.deletedAt) {
+          // 게임이 삭제된 적이 있는 경우
+          await this.gameService.restoreGame(game.id);
+          updateGameDto = { ...updateGameDto, createdAt: new Date() };
+        }
+        await this.gameService.updateGame(game.id, updateGameDto, user);
+      }
+      await this.projectRepository.save({ id: project.id, isPublished: true });
+      await queryRunner.commitTransaction();
+      return { message: 'publish complete' };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      return { message: 'publish fail' };
+    } finally {
+      await queryRunner.release();
     }
   }
 
