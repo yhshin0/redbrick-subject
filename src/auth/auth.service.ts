@@ -1,9 +1,11 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+
 import { UsersService } from '../users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
-import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
+import { AUTH_ERROR_MSG } from './auth.constants';
 
 @Injectable()
 export class AuthService {
@@ -12,8 +14,10 @@ export class AuthService {
     private readonly usersService: UsersService,
   ) {}
 
-  async signIn(loginUserDto: LoginUserDto): Promise<{ accessToken: string }> {
-    const { email, password } = loginUserDto;
+  async signIn({
+    email,
+    password,
+  }: LoginUserDto): Promise<{ accessToken: string }> {
     const user = await this.usersService.findOne(email);
 
     // 로그인한 유저 비밀번호와 디비에 저장된 비밀번호 비교
@@ -28,12 +32,11 @@ export class AuthService {
 
       return { accessToken };
     } else {
-      throw new UnauthorizedException('login fail');
+      throw new UnauthorizedException(AUTH_ERROR_MSG.LOGIN_FAIL);
     }
   }
 
-  async signOut(user: User) {
-    const { email } = user;
+  async signOut({ email }: User): Promise<void> {
     const result = await this.usersService.findOne(email);
     await this.usersService.updateLoginedAt(result.email, null);
   }
