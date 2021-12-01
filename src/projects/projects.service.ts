@@ -19,6 +19,7 @@ import { Project } from './entities/project.entity';
 import { IFindAllResponse } from './projects.interface';
 import { GameService } from '../game/game.service';
 import { PublishProjectDto } from './dto/publish-project.dto';
+import { PROJECT_CONSTANTS, PROJECT_ERROR_MSG } from './projects.constants';
 
 @Injectable()
 export class ProjectsService {
@@ -42,7 +43,7 @@ export class ProjectsService {
       );
     } catch (error) {
       throw new InternalServerErrorException(
-        `Project 생성에 오류가 발생하였습니다.`,
+        PROJECT_ERROR_MSG.ERROR_FOR_CREATE,
       );
     }
   }
@@ -65,7 +66,7 @@ export class ProjectsService {
 
       // user가 project 작성자인지 확인
       if (project.user.id !== user.id) {
-        throw new UnauthorizedException('프로젝트의 작성자가 아닙니다');
+        throw new UnauthorizedException(PROJECT_ERROR_MSG.NOT_AUTHOR);
       }
 
       if (!project.isPublished) {
@@ -130,7 +131,7 @@ export class ProjectsService {
   async findOne(id: number): Promise<Project> {
     const existedProject = await this.projectRepository.findOne({ id });
     if (!existedProject) {
-      throw new NotFoundException('해당 project가 존재하지 않습니다.');
+      throw new NotFoundException(PROJECT_ERROR_MSG.NOT_FOUND_PROJECT);
     }
     return existedProject;
   }
@@ -145,29 +146,32 @@ export class ProjectsService {
     user: User;
   }): Promise<any> {
     if (Object.keys(updateProjectDto).length === 0) {
-      throw new BadRequestException('요청하신 수정 값이 잘못되었습니다');
+      throw new BadRequestException(PROJECT_ERROR_MSG.NO_VALUE_FOR_UPDATE);
     }
 
     const project = await this.findOne(id);
     if (project.user.id !== user.id) {
-      throw new UnauthorizedException('해당 프로젝트를 작성한 유저가 아닙니다');
+      throw new UnauthorizedException(PROJECT_ERROR_MSG.NOT_AUTHOR);
     }
 
     const timeouts = this.schedulerRegistry.getTimeouts();
-    if (timeouts.includes(`porject-timer-${id}`)) {
-      this.schedulerRegistry.deleteTimeout(`porject-timer-${id}`);
+    const timeoutKey = PROJECT_CONSTANTS.TIMEOUT_KEY_PREFIX + id;
+    if (timeouts.includes(timeoutKey)) {
+      this.schedulerRegistry.deleteTimeout(timeoutKey);
     }
 
-    await this.cacheService.set(`porject-${id}`, updateProjectDto);
-    const cacheData = await this.cacheService.get(`porject-${id}`);
+    const cacheKey = PROJECT_CONSTANTS.CACHE_KEY_PREFIX + id;
+    await this.cacheService.set(cacheKey, updateProjectDto);
+    const cacheData = await this.cacheService.get(cacheKey);
+
     this.schedulerRegistry.addTimeout(
-      `porject-timer-${id}`,
+      timeoutKey,
       setTimeout(async () => {
         project.title = cacheData.title;
         project.code = cacheData.code;
         project.isPublished = cacheData.isPublished;
         await this.projectRepository.save(project);
-      }, 1000 * 60),
+      }, PROJECT_CONSTANTS.MILLISECONDS_FOR_TIMEOUT),
     );
     return cacheData;
   }
@@ -175,7 +179,7 @@ export class ProjectsService {
   async delete(id: number, user: User): Promise<Project> {
     const project = await this.findOne(id);
     if (project.user.id !== user.id) {
-      throw new UnauthorizedException('해당 프로젝트를 작성한 유저가 아닙니다');
+      throw new UnauthorizedException(PROJECT_ERROR_MSG.NOT_AUTHOR);
     }
 
     await this.projectRepository.softDelete({ id });
