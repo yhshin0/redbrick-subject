@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   Patch,
-  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -42,14 +41,23 @@ export class GameController {
     });
   }
 
-  @Get('/:id')
-  getGameById(@Param('id') id: string): Promise<Game> {
-    return this.gameService.getGameById(+id);
-  }
-
   @Get('/count/:id')
   increaseCount(@Param('id') id: string): Promise<Game> {
     return this.gameService.increaseCount(+id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/likes/:id')
+  addOrRemoveLike(
+    @Param('id') id: string,
+    @GetUser() user: User,
+  ): Promise<{ message: string }> {
+    return this.gameService.addOrRemoveLike(+id, user);
+  }
+
+  @Get('/:id')
+  getGameById(@Param('id') id: string): Promise<Game> {
+    return this.gameService.getGameById(+id);
   }
 
   @Patch('/:id')
@@ -69,14 +77,5 @@ export class GameController {
     @GetUser() user: User,
   ): Promise<{ message: string }> {
     return this.gameService.deleteGame(+id, user);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('/likes/:id')
-  addOrRemoveLike(
-    @Param('id') id: string,
-    @GetUser() user: User,
-  ): Promise<{ message: string }> {
-    return this.gameService.addOrRemoveLike(+id, user);
   }
 }

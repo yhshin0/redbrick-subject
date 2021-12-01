@@ -26,16 +26,16 @@ export class GameRepository extends Repository<Game> {
     }
   }
 
-  async addOrRemoveLike(game: Game, user: User): Promise<{ message: string }> {
+  async toggleLike(game: Game, user: User): Promise<{ message: string }> {
+    // 좋아요 추가 또는 제거
     let message = '';
-    const query = this.createQueryBuilder('game');
-    const gameFound = await query
+    const gameLikedByUser = await this.createQueryBuilder('game')
       .leftJoinAndSelect('game.likes', 'likes')
       .where('game.id = :gameId', { gameId: game.id })
       .andWhere('likes.id = :userId', { userId: user.id })
       .getOne();
 
-    if (!gameFound) {
+    if (!gameLikedByUser) {
       game.likes.push(user);
       message = '좋아요가 완료 되었습니다.';
     } else {
@@ -44,6 +44,7 @@ export class GameRepository extends Repository<Game> {
       });
       message = '좋아요가 취소 되었습니다.';
     }
+
     try {
       await this.save(game);
       return { message: message };
@@ -53,7 +54,7 @@ export class GameRepository extends Repository<Game> {
   }
 
   async findOneGame(id: number) {
-    const game = await this.createQueryBuilder('game')
+    return await this.createQueryBuilder('game')
       .leftJoin('game.likes', 'likes')
       .leftJoin('game.user', 'user')
       .addSelect('user.nickname')
@@ -62,7 +63,6 @@ export class GameRepository extends Repository<Game> {
       .loadRelationCountAndMap('game.likeCount', 'game.likes')
       .where('game.id = :id', { id: id })
       .getOne();
-    return game;
   }
 
   async findGames(

@@ -79,6 +79,7 @@ export class GameService {
   }
 
   async restoreGame(id: number): Promise<void> {
+    // 삭제 되었던 game의 deletedAt 값을 삭제하여 복구함
     await this.gameRepository.restore(id);
   }
 
@@ -111,7 +112,7 @@ export class GameService {
 
   async addOrRemoveLike(id: number, user: User): Promise<{ message: string }> {
     const game = await this.getGameById(id);
-    return this.gameRepository.addOrRemoveLike(game, user);
+    return this.gameRepository.toggleLike(game, user);
   }
 
   async search({
