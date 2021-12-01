@@ -31,11 +31,11 @@ export class Game extends CoreEntity {
   @JoinColumn()
   project: Project;
 
-  @ManyToOne((_type) => User, (user) => user.games, {
+  @ManyToOne(() => User, (user) => user.games, {
     onDelete: 'CASCADE',
   })
   user: User;
 
-  @ManyToMany((_type) => User, (users) => users.likes, { eager: true })
+  @ManyToMany(() => User, (users) => users.likes, { eager: true })
   likes: User[];
 }
