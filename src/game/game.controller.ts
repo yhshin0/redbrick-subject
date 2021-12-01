@@ -2,9 +2,7 @@ import {
   Body,
   Controller,
   Delete,
-  forwardRef,
   Get,
-  Inject,
   Param,
   Patch,
   Post,
@@ -14,31 +12,14 @@ import {
 
 import { GetUser } from '../auth/get-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { ProjectsService } from '../projects/projects.service';
 import { User } from '../users/entities/user.entity';
-import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
 import { GameService } from './game.service';
 
 @Controller('game')
 export class GameController {
-  constructor(
-    private gameService: GameService,
-    @Inject(forwardRef(() => ProjectsService))
-    private projectsService: ProjectsService,
-  ) {}
-
-  @UseGuards(JwtAuthGuard)
-  @Post()
-  async createGame(
-    @Body() createGameDto: CreateGameDto,
-    @GetUser() user: User,
-  ): Promise<Game> {
-    const { projectId } = createGameDto;
-    const project = await this.projectsService.findOne(projectId);
-    return await this.gameService.createGame({ createGameDto, project, user });
-  }
+  constructor(private gameService: GameService) {}
 
   @Get()
   getGames(
