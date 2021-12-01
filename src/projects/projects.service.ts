@@ -192,7 +192,7 @@ export class ProjectsService {
     publishProjectDto,
     user,
   }: IProjectInfoForPublish): Promise<void> {
-    const game = await this.gameService.getGameByProject(project);
+    const game = await this.gameService.getPublishedGame(project);
     let updateGameDto;
     updateGameDto = Object.assign(
       {},

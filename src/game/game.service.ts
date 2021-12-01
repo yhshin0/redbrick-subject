@@ -67,7 +67,7 @@ export class GameService {
     }
   }
 
-  async getGameByProject(project: Project): Promise<Game> {
+  async getPublishedGame(project: Project): Promise<Game> {
     const game = await this.gameRepository.findOne({
       where: { project },
       withDeleted: true,
