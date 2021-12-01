@@ -64,10 +64,7 @@ export class ProjectsService {
     try {
       const project = await this.findOne(id);
 
-      // user가 project 작성자인지 확인
-      if (project.user.id !== user.id) {
-        throw new UnauthorizedException(PROJECT_ERROR_MSG.NOT_AUTHOR);
-      }
+      this.checkAuthor(project, user);
 
       if (!project.isPublished) {
         // 게임이 없는 경우 게임 생성
@@ -119,6 +116,7 @@ export class ProjectsService {
       isNaN(pageSize) || pageSize <= 0
         ? PROJECT_CONSTANTS.LIST_DEFAULT_PAGE_SIZE
         : pageSize;
+
     const data = await this.projectRepository.findAndCount({
       where: { user },
       skip: page * pageSize,
@@ -153,9 +151,7 @@ export class ProjectsService {
     }
 
     const project = await this.findOne(id);
-    if (project.user.id !== user.id) {
-      throw new UnauthorizedException(PROJECT_ERROR_MSG.NOT_AUTHOR);
-    }
+    this.checkAuthor(project, user);
 
     const timeouts = this.schedulerRegistry.getTimeouts();
     const timeoutKey = PROJECT_CONSTANTS.TIMEOUT_KEY_PREFIX + id;
@@ -181,11 +177,15 @@ export class ProjectsService {
 
   async delete(id: number, user: User): Promise<Project> {
     const project = await this.findOne(id);
-    if (project.user.id !== user.id) {
-      throw new UnauthorizedException(PROJECT_ERROR_MSG.NOT_AUTHOR);
-    }
+    this.checkAuthor(project, user);
 
     await this.projectRepository.softDelete({ id });
     return project;
+  }
+
+  private checkAuthor(project: Project, user: User): void {
+    if (project.user.id !== user.id) {
+      throw new UnauthorizedException(PROJECT_ERROR_MSG.NOT_AUTHOR);
+    }
   }
 }
