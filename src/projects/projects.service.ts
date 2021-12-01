@@ -153,7 +153,6 @@ export class ProjectsService {
       setTimeout(async () => {
         project.title = cacheData.title;
         project.code = cacheData.code;
-        project.isPublished = cacheData.isPublished;
         await this.projectRepository.save(project);
       }, PROJECT_CONSTANTS.MILLISECONDS_FOR_TIMEOUT),
     );
