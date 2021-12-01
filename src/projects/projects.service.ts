@@ -58,39 +58,37 @@ export class ProjectsService {
     user: User;
   }) {
     const queryRunner = this.connection.createQueryRunner();
-
     await queryRunner.connect();
     await queryRunner.startTransaction();
+
     try {
       const project = await this.findOne(id);
 
       this.checkAuthor(project, user);
 
       if (!project.isPublished) {
-        // 게임이 없는 경우 게임 생성
-        const createGameDto = {
-          title: project.title,
-          ...publishProjectDto,
-          code: project.code,
-          projectId: project.id,
-        };
-        await this.gameService.createGame(createGameDto, project, user);
+        // 프로젝트가 퍼블리싱 된 적이 없는 경우(게임이 없는 경우) 게임 생성
+        await this.createNewGame({ project, publishProjectDto, user });
       } else {
-        // 게임이 존재하는 경우 게임 수정
+        // 퍼블리싱 된 적이 있는 경우(게임이 존재하는 경우) 게임 수정
         const game = await this.gameService.getGameByProjectId(project);
         let updateGameDto;
         updateGameDto = Object.assign(
           {},
           { title: project.title, code: project.code, ...publishProjectDto },
         );
+
         if (game.deletedAt) {
           // 게임이 삭제된 적이 있는 경우
           await this.gameService.restoreGame(game.id);
           updateGameDto = { ...updateGameDto, createdAt: new Date() };
         }
+
         await this.gameService.updateGame(game.id, updateGameDto, user);
       }
+
       await this.projectRepository.save({ id: project.id, isPublished: true });
+
       await queryRunner.commitTransaction();
       return { message: 'publish complete' };
     } catch (error) {
@@ -187,5 +185,23 @@ export class ProjectsService {
     if (project.user.id !== user.id) {
       throw new UnauthorizedException(PROJECT_ERROR_MSG.NOT_AUTHOR);
     }
+  }
+
+  private async createNewGame({
+    project,
+    publishProjectDto,
+    user,
+  }: {
+    project: Project;
+    publishProjectDto: PublishProjectDto;
+    user: User;
+  }): Promise<void> {
+    const createGameDto = {
+      title: project.title,
+      ...publishProjectDto,
+      code: project.code,
+      projectId: project.id,
+    };
+    await this.gameService.createGame(createGameDto, project, user);
   }
 }
