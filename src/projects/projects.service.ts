@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   forwardRef,
+  HttpException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -65,7 +66,6 @@ export class ProjectsService {
       const project = await this.findOne(id);
 
       this.checkAuthor(project, user);
-
       if (!project.isPublished) {
         // 프로젝트가 퍼블리싱 된 적이 없는 경우(게임이 없는 경우) 게임 생성
         await this.createNewGame({ project, publishProjectDto, user });
@@ -80,7 +80,11 @@ export class ProjectsService {
       return { message: 'publish complete' };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException(error.message);
+      if (error instanceof HttpException) {
+        throw new HttpException(error.getResponse(), error.getStatus());
+      } else {
+        throw new InternalServerErrorException();
+      }
     } finally {
       await queryRunner.release();
     }
