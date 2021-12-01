@@ -117,13 +117,13 @@ describe('GameService', () => {
   describe('getGameByProjectId', () => {
     it('Project id로 조회 후 Game 리턴', async () => {
       gameRepository.findOne.mockResolvedValue(mockGameResult);
-      const result = await gameService.getGameByProjectId(mockProject);
+      const result = await gameService.getGameByProject(mockProject);
       expect(result).toEqual(mockGameResult);
     });
 
     it('조회되지 않는 id일 경우 에러 리턴', async () => {
       gameRepository.findOne.mockResolvedValue(null);
-      expect(gameService.getGameByProjectId(mockProject)).rejects.toThrow(
+      expect(gameService.getGameByProject(mockProject)).rejects.toThrow(
         NotFoundException,
       );
     });
