@@ -92,18 +92,16 @@ export class GameService {
       throw new BadRequestException(GAME_ERROR_MSG.NO_VALUE_FOR_UPDATE);
     }
     const game = await this.getGameById(id);
-    if (game.user.id !== user.id) {
-      throw new UnauthorizedException(GAME_ERROR_MSG.NOT_AUTHOR);
-    }
+    this.checkAuthor(game, user);
+
     await this.gameRepository.update({ id }, updateGameDto);
     return await this.getGameById(id);
   }
 
   async deleteGame(id: number, user: User): Promise<{ message: string }> {
     const game = await this.getGameById(id);
-    if (game.user.id !== user.id) {
-      throw new UnauthorizedException(GAME_ERROR_MSG.NOT_AUTHOR);
-    }
+    this.checkAuthor(game, user);
+
     await this.gameRepository.softDelete({ id });
     return { message: '게임 삭제 완료' };
   }
@@ -143,5 +141,11 @@ export class GameService {
       .offset(page * pageSize)
       .getMany();
     return { totalCount, data };
+  }
+
+  private checkAuthor(game: Game, user: User): void {
+    if (game.user.id !== user.id) {
+      throw new UnauthorizedException(GAME_ERROR_MSG.NOT_AUTHOR);
+    }
   }
 }
