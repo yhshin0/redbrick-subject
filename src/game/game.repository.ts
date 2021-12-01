@@ -93,6 +93,8 @@ export class GameRepository extends Repository<Game> {
   }): Promise<{ totalCount: number; data: Game[] }> {
     const data = await this.createQueryBuilder('game')
       .innerJoin('game.user', 'user')
+      .addSelect('user.id')
+      .addSelect('user.nickname')
       .where(`game.title like :keyword`, { keyword: `%${keyword}%` })
       .orWhere(`user.nickname like :keyword`, { keyword: `%${keyword}%` })
       .limit(pageSize)
