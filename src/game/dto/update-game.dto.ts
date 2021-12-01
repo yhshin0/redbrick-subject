@@ -1,18 +1,9 @@
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
 
-export class UpdateGameDto {
-  @IsString()
-  @IsOptional()
-  title: string;
+import { IsDate, IsOptional } from 'class-validator';
+import { CreateGameDto } from './create-game.dto';
 
-  @IsString()
-  @IsOptional()
-  description: string;
-
-  @IsString()
-  @IsOptional()
-  code: string;
-
+export class UpdateGameDto extends PartialType(CreateGameDto) {
   @IsDate()
   @IsOptional()
   createdAt: Date;

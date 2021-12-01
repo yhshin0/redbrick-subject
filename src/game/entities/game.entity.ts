@@ -1,4 +1,3 @@
-import { CoreEntity } from '../../core/entities/core.entity';
 import {
   Column,
   Entity,
@@ -7,6 +6,8 @@ import {
   ManyToMany,
   OneToOne,
 } from 'typeorm';
+
+import { CoreEntity } from '../../core/entities/core.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
 
@@ -30,11 +31,11 @@ export class Game extends CoreEntity {
   @JoinColumn()
   project: Project;
 
-  @ManyToOne((_type) => User, (user) => user.games, {
+  @ManyToOne(() => User, (user) => user.games, {
     onDelete: 'CASCADE',
   })
   user: User;
 
-  @ManyToMany((_type) => User, (users) => users.likes, { eager: true })
+  @ManyToMany(() => User, (users) => users.likes, { eager: true })
   likes: User[];
 }

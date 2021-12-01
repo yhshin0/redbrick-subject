@@ -184,7 +184,7 @@ export class ProjectsService {
       code: project.code,
       projectId: project.id,
     };
-    await this.gameService.createGame(createGameDto, project, user);
+    await this.gameService.createGame({ createGameDto, project, user });
   }
 
   private async updatePublishedGame({
@@ -192,7 +192,7 @@ export class ProjectsService {
     publishProjectDto,
     user,
   }: IProjectInfoForPublish): Promise<void> {
-    const game = await this.gameService.getGameByProject(project);
+    const game = await this.gameService.getPublishedGame(project);
     let updateGameDto;
     updateGameDto = Object.assign(
       {},
@@ -205,6 +205,6 @@ export class ProjectsService {
       updateGameDto = { ...updateGameDto, createdAt: new Date() };
     }
 
-    await this.gameService.updateGame(game.id, updateGameDto, user);
+    await this.gameService.updateGame({ id: game.id, updateGameDto, user });
   }
 }
