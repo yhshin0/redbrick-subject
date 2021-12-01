@@ -71,20 +71,7 @@ export class ProjectsService {
         await this.createNewGame({ project, publishProjectDto, user });
       } else {
         // 퍼블리싱 된 적이 있는 경우(게임이 존재하는 경우) 게임 수정
-        const game = await this.gameService.getGameByProject(project);
-        let updateGameDto;
-        updateGameDto = Object.assign(
-          {},
-          { title: project.title, code: project.code, ...publishProjectDto },
-        );
-
-        if (game.deletedAt) {
-          // 게임이 삭제된 적이 있는 경우
-          await this.gameService.restoreGame(game.id);
-          updateGameDto = { ...updateGameDto, createdAt: new Date() };
-        }
-
-        await this.gameService.updateGame(game.id, updateGameDto, user);
+        await this.updatePublishedGame({ project, publishProjectDto, user });
       }
 
       await this.projectRepository.save({ id: project.id, isPublished: true });
@@ -93,7 +80,7 @@ export class ProjectsService {
       return { message: 'publish complete' };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      return { message: 'publish fail' };
+      throw new InternalServerErrorException(error.message);
     } finally {
       await queryRunner.release();
     }
@@ -203,5 +190,30 @@ export class ProjectsService {
       projectId: project.id,
     };
     await this.gameService.createGame(createGameDto, project, user);
+  }
+
+  private async updatePublishedGame({
+    project,
+    publishProjectDto,
+    user,
+  }: {
+    project: Project;
+    publishProjectDto: PublishProjectDto;
+    user: User;
+  }): Promise<void> {
+    const game = await this.gameService.getGameByProject(project);
+    let updateGameDto;
+    updateGameDto = Object.assign(
+      {},
+      { title: project.title, code: project.code, ...publishProjectDto },
+    );
+
+    if (game.deletedAt) {
+      // 게임이 삭제된 적이 있는 경우
+      await this.gameService.restoreGame(game.id);
+      updateGameDto = { ...updateGameDto, createdAt: new Date() };
+    }
+
+    await this.gameService.updateGame(game.id, updateGameDto, user);
   }
 }
