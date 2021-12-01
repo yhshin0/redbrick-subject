@@ -37,7 +37,7 @@ export class GameController {
   ): Promise<Game> {
     const { projectId } = createGameDto;
     const project = await this.projectsService.findOne(projectId);
-    return await this.gameService.createGame(createGameDto, project, user);
+    return await this.gameService.createGame({ createGameDto, project, user });
   }
 
   @Get()
@@ -54,7 +54,7 @@ export class GameController {
   ): Promise<{ totalCount: number; data: Game[] }> {
     const limit = 5;
     const offset = page ? (Number(page) - 1) * limit : 0;
-    return this.gameService.search(limit, offset, keyword);
+    return this.gameService.search({ limit, offset, keyword });
   }
 
   @Get('/:id')
@@ -69,7 +69,7 @@ export class GameController {
     @Body() updateGameDto: UpdateGameDto,
     @GetUser() user: User,
   ): Promise<Game> {
-    return this.gameService.updateGame(Number(id), updateGameDto, user);
+    return this.gameService.updateGame({ id: Number(id), updateGameDto, user });
   }
 
   @Delete('/:id')

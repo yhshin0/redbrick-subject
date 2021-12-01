@@ -11,11 +11,15 @@ import { Game } from './entities/game.entity';
 
 @EntityRepository(Game)
 export class GameRepository extends Repository<Game> {
-  async createGame(
-    createGameDto: CreateGameDto,
-    project: Project,
-    user: User,
-  ): Promise<Game> {
+  async createGame({
+    createGameDto,
+    project,
+    user,
+  }: {
+    createGameDto: CreateGameDto;
+    project: Project;
+    user: User;
+  }): Promise<Game> {
     const param = { ...createGameDto, project, user };
     const game = this.create(param);
     try {

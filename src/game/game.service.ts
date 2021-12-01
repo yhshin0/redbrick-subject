@@ -21,12 +21,16 @@ export class GameService {
     private gameRepository: GameRepository,
   ) {}
 
-  createGame(
-    createGameDto: CreateGameDto,
-    project: Project,
-    user: User,
-  ): Promise<Game> {
-    return this.gameRepository.createGame(createGameDto, project, user);
+  createGame({
+    createGameDto,
+    project,
+    user,
+  }: {
+    createGameDto: CreateGameDto;
+    project: Project;
+    user: User;
+  }): Promise<Game> {
+    return this.gameRepository.createGame({ createGameDto, project, user });
   }
 
   getGames(limit: number, offset: number): Promise<Game[]> {
@@ -67,11 +71,15 @@ export class GameService {
     await this.gameRepository.restore(id);
   }
 
-  async updateGame(
-    id: number,
-    updateGameDto: UpdateGameDto,
-    user: User,
-  ): Promise<Game> {
+  async updateGame({
+    id,
+    updateGameDto,
+    user,
+  }: {
+    id: number;
+    updateGameDto: UpdateGameDto;
+    user: User;
+  }): Promise<Game> {
     if (Object.keys(updateGameDto).length === 0) {
       throw new BadRequestException('요청 수정 값이 잘못되었습니다.');
     }
@@ -100,11 +108,15 @@ export class GameService {
     return this.gameRepository.addOrRemoveLike(game, user);
   }
 
-  async search(
-    limit: number,
-    offset: number,
-    keyword: string,
-  ): Promise<{ totalCount: number; data: Game[] }> {
+  async search({
+    limit,
+    offset,
+    keyword,
+  }: {
+    limit: number;
+    offset: number;
+    keyword: string;
+  }): Promise<{ totalCount: number; data: Game[] }> {
     const totalCount = await this.gameRepository
       .createQueryBuilder('game')
       .innerJoin('game.user', 'user')
