@@ -1,3 +1,9 @@
-import { CreateProjectDto } from './create-project.dto';
+import { IsString } from 'class-validator';
 
-export class UpdateProjectDto extends CreateProjectDto {}
+export class UpdateProjectDto {
+  @IsString()
+  title: string;
+
+  @IsString()
+  code: string;
+}
