@@ -1,4 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+
 import { Project } from '../../projects/entities/project.entity';
 import {
   BeforeInsert,
@@ -9,8 +11,8 @@ import {
   OneToMany,
 } from 'typeorm';
 import { CoreEntity } from '../../core/entities/core.entity';
-import * as bcrypt from 'bcrypt';
 import { Game } from '../../game/entities/game.entity';
+import { USER_CONSTANTS } from '../user.constants';
 
 @Entity()
 export class User extends CoreEntity {
@@ -30,25 +32,28 @@ export class User extends CoreEntity {
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     try {
-      this.password = await bcrypt.hash(this.password, 10);
+      this.password = await bcrypt.hash(
+        this.password,
+        USER_CONSTANTS.SALT_ROUND,
+      );
     } catch (e) {
       throw new InternalServerErrorException();
     }
   }
 
-  @OneToMany((_type) => Project, (project) => project.user, {
+  @OneToMany(() => Project, (project) => project.user, {
     eager: false,
     cascade: true,
   })
   projects: Project[];
 
-  @OneToMany((_type) => Game, (game) => game.user, {
+  @OneToMany(() => Game, (game) => game.user, {
     eager: false,
     cascade: true,
   })
   games: Game[];
 
-  @ManyToMany((_type) => Game, (game) => game.likes, {
+  @ManyToMany(() => Game, (game) => game.likes, {
     cascade: true,
   })
   @JoinTable({ name: 'users_likes' })

@@ -1,9 +1,5 @@
-import { IsString } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
 
-export class UpdateUserDto {
-  @IsString()
-  password: string;
+import { CreateUserDto } from './create-user.dto';
 
-  @IsString()
-  nickname: string;
-}
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
