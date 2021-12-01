@@ -43,7 +43,7 @@ export class GameController {
   @Get()
   getGames(@Query('page') page: string): Promise<Game[]> {
     const limit = 5;
-    const offset = page ? (Number(page) - 1) * limit : 0;
+    const offset = page ? (+page - 1) * limit : 0;
     return this.gameService.getGames(limit, offset);
   }
 
@@ -53,13 +53,13 @@ export class GameController {
     @Query('page') page: string,
   ): Promise<{ totalCount: number; data: Game[] }> {
     const limit = 5;
-    const offset = page ? (Number(page) - 1) * limit : 0;
+    const offset = page ? (+page - 1) * limit : 0;
     return this.gameService.search({ limit, offset, keyword });
   }
 
   @Get('/:id')
   getGameById(@Param('id') id: string): Promise<Game> {
-    return this.gameService.getGameById(Number(id), true);
+    return this.gameService.getGameById(+id, true);
   }
 
   @Patch('/:id')
@@ -69,7 +69,7 @@ export class GameController {
     @Body() updateGameDto: UpdateGameDto,
     @GetUser() user: User,
   ): Promise<Game> {
-    return this.gameService.updateGame({ id: Number(id), updateGameDto, user });
+    return this.gameService.updateGame({ id: +id, updateGameDto, user });
   }
 
   @Delete('/:id')
@@ -78,7 +78,7 @@ export class GameController {
     @Param('id') id: string,
     @GetUser() user: User,
   ): Promise<{ message: string }> {
-    return this.gameService.deleteGame(Number(id), user);
+    return this.gameService.deleteGame(+id, user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -87,6 +87,6 @@ export class GameController {
     @Param('id') id: string,
     @GetUser() user: User,
   ): Promise<{ message: string }> {
-    return this.gameService.addOrRemoveLike(Number(id), user);
+    return this.gameService.addOrRemoveLike(+id, user);
   }
 }
