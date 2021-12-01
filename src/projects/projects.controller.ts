@@ -80,7 +80,7 @@ export class ProjectsController {
   deleteProject(
     @Param('id') id: string,
     @GetUser() user: User,
-  ): Promise<Project> {
+  ): Promise<{ message: string }> {
     return this.projectsService.delete(+id, user);
   }
 }

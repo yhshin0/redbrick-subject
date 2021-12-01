@@ -163,12 +163,12 @@ export class ProjectsService {
     return cacheData;
   }
 
-  async delete(id: number, user: User): Promise<Project> {
+  async delete(id: number, user: User): Promise<{ message: string }> {
     const project = await this.findOne(id);
     this.checkAuthor(project, user);
 
     await this.projectRepository.softDelete({ id });
-    return project;
+    return { message: 'project가 삭제되었습니다' };
   }
 
   private checkAuthor(project: Project, user: User): void {
