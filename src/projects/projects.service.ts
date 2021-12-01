@@ -18,6 +18,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
 import { IFindAllResponse } from './projects.interface';
 import { GameService } from '../game/game.service';
+import { PublishProjectDto } from './dto/publish-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -46,13 +47,21 @@ export class ProjectsService {
     }
   }
 
-  async publishProject(id, publishProjectDto, user) {
+  async publishProject({
+    id,
+    publishProjectDto,
+    user,
+  }: {
+    id: number;
+    publishProjectDto: PublishProjectDto;
+    user: User;
+  }) {
     const queryRunner = this.connection.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const project = await this.findOne(+id);
+      const project = await this.findOne(id);
 
       // user가 project 작성자인지 확인
       if (project.user.id !== user.id) {
@@ -126,11 +135,15 @@ export class ProjectsService {
     return existedProject;
   }
 
-  async update(
-    id: number,
-    updateProjectDto: UpdateProjectDto,
-    user: User,
-  ): Promise<any> {
+  async update({
+    id,
+    updateProjectDto,
+    user,
+  }: {
+    id: number;
+    updateProjectDto: UpdateProjectDto;
+    user: User;
+  }): Promise<any> {
     if (Object.keys(updateProjectDto).length === 0) {
       throw new BadRequestException('요청하신 수정 값이 잘못되었습니다');
     }

@@ -42,11 +42,11 @@ export class ProjectsController {
     @Body() publishProjectDto: PublishProjectDto,
     @GetUser() user: User,
   ): Promise<IPublishResponseMessage> {
-    return await this.projectsService.publishProject(
-      id,
+    return await this.projectsService.publishProject({
+      id: +id,
       publishProjectDto,
       user,
-    );
+    });
   }
 
   @Get()
@@ -74,7 +74,7 @@ export class ProjectsController {
     @Body() updateProjectDto: UpdateProjectDto,
     @GetUser() user: User,
   ): Promise<Project> {
-    return this.projectsService.update(+id, updateProjectDto, user);
+    return this.projectsService.update({ id: +id, updateProjectDto, user });
   }
 
   @Delete('/:id')
