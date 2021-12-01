@@ -65,8 +65,11 @@ export class GameRepository extends Repository<Game> {
     return game;
   }
 
-  async findGames(page: number, pageSize: number): Promise<Game[]> {
-    const game = await this.createQueryBuilder('game')
+  async findGames(
+    page: number,
+    pageSize: number,
+  ): Promise<{ totalCount: number; data: Game[] }> {
+    const data = await this.createQueryBuilder('game')
       .leftJoin('game.likes', 'likes')
       .leftJoin('game.user', 'user')
       .addSelect('user.nickname')
@@ -75,8 +78,8 @@ export class GameRepository extends Repository<Game> {
       .limit(pageSize)
       .offset(page * pageSize)
       .loadRelationCountAndMap('game.likeCount', 'game.likes')
-      .getMany();
-    return game;
+      .getManyAndCount();
+    return { totalCount: data[1], data: data[0] };
   }
 
   async search({

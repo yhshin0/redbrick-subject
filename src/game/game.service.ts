@@ -34,7 +34,10 @@ export class GameService {
     return this.gameRepository.createGame({ createGameDto, project, user });
   }
 
-  getGames(page: number, pageSize: number): Promise<Game[]> {
+  getGames(
+    page: number,
+    pageSize: number,
+  ): Promise<{ totalCount: number; data: Game[] }> {
     page =
       isNaN(page) || page <= 0 ? GAME_CONSTANTS.LIST_DEFAULT_PAGE : page - 1;
     pageSize =

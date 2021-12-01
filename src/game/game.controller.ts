@@ -25,7 +25,7 @@ export class GameController {
   getGames(
     @Query('page') page: string,
     @Query('pageSize') pageSize: string,
-  ): Promise<Game[]> {
+  ): Promise<{ totalCount: number; data: Game[] }> {
     return this.gameService.getGames(+page, +pageSize);
   }
 
