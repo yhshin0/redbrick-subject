@@ -49,16 +49,11 @@ export class GameService {
     if (!game) {
       throw new NotFoundException(GAME_ERROR_MSG.INVALID_GAME_ID);
     }
-
     return game;
   }
 
   async increaseCount(id: number): Promise<Game> {
-    const game = await this.gameRepository.findOneGame(id);
-    if (!game) {
-      throw new NotFoundException(GAME_ERROR_MSG.INVALID_GAME_ID);
-    }
-
+    const game = await this.getGameById(id);
     game.viewCount++;
     try {
       return await this.gameRepository.save(game);
@@ -114,10 +109,7 @@ export class GameService {
   }
 
   async addOrRemoveLike(id: number, user: User): Promise<{ message: string }> {
-    const game = await this.gameRepository.findOne({ id });
-    if (!game) {
-      throw new NotFoundException(GAME_ERROR_MSG.INVALID_GAME_ID);
-    }
+    const game = await this.getGameById(id);
     return this.gameRepository.addOrRemoveLike(game, user);
   }
 
