@@ -1,7 +1,4 @@
-import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 
 import { Project } from '../projects/entities/project.entity';
@@ -21,16 +18,11 @@ export class GameRepository extends Repository<Game> {
     project: Project;
     user: User;
   }): Promise<Game> {
-    const param = { ...createGameDto, project, user };
-    const game = this.create(param);
+    const game = this.create({ ...createGameDto, project, user });
     try {
-      await this.save(game);
-      return game;
+      return await this.save(game);
     } catch (error) {
-      if ((error.code = 'SQLITE_CONSTRAINT')) {
-        throw new BadRequestException(GAME_ERROR_MSG.ALREADY_PUBLISHED);
-      }
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(GAME_ERROR_MSG.FAIL_TO_CREATE);
     }
   }
 
