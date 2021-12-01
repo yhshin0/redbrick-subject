@@ -52,13 +52,12 @@ export class ProjectsController {
   @Get()
   findAllProjects(
     @Query('page') page: string,
+    @Query('pageSize') pageSize: string,
     @GetUser() user: User,
   ): Promise<IFindAllResponse> {
-    const limit = 5;
-    const offset = page ? (Number(page) - 1) * limit : 0;
     return this.projectsService.findAll({
-      take: limit,
-      skip: offset,
+      page: +page,
+      pageSize: +pageSize,
       user,
     });
   }

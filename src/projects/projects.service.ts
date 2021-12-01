@@ -105,26 +105,29 @@ export class ProjectsService {
   }
 
   async findAll({
-    take,
-    skip,
+    page,
+    pageSize,
     user,
   }: {
-    take: number;
-    skip: number;
+    page: number;
+    pageSize: number;
     user: User;
   }): Promise<IFindAllResponse> {
-    // 로그인한 유저의 프로젝트만 볼 수 있도록 where절 사용
-    const totalCount = await this.projectRepository.count({
+    page =
+      isNaN(page) || page <= 0 ? PROJECT_CONSTANTS.LIST_DEFAULT_PAGE : page - 1;
+    pageSize =
+      isNaN(pageSize) || pageSize <= 0
+        ? PROJECT_CONSTANTS.LIST_DEFAULT_PAGE_SIZE
+        : pageSize;
+    const data = await this.projectRepository.findAndCount({
       where: { user },
+      skip: page * pageSize,
+      take: pageSize,
     });
-    const data = await this.projectRepository.find({
-      skip,
-      take,
-      where: { user },
-    });
+
     return {
-      totalCount,
-      data,
+      totalCount: data[1],
+      data: data[0],
     };
   }
 
