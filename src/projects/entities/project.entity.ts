@@ -14,7 +14,7 @@ export class Project extends CoreEntity {
   @Column({ type: Boolean, default: false })
   isPublished: boolean;
 
-  @ManyToOne((_type) => User, (user) => user.projects, {
+  @ManyToOne(() => User, (user) => user.projects, {
     eager: true,
     onDelete: 'CASCADE',
   })
