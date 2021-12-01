@@ -51,7 +51,7 @@ export class GameService {
     return game;
   }
 
-  async getGameByProjectId(project: Project): Promise<Game> {
+  async getGameByProject(project: Project): Promise<Game> {
     const game = await this.gameRepository.findOne({
       where: { project },
       withDeleted: true,

@@ -71,7 +71,7 @@ export class ProjectsService {
         await this.createNewGame({ project, publishProjectDto, user });
       } else {
         // 퍼블리싱 된 적이 있는 경우(게임이 존재하는 경우) 게임 수정
-        const game = await this.gameService.getGameByProjectId(project);
+        const game = await this.gameService.getGameByProject(project);
         let updateGameDto;
         updateGameDto = Object.assign(
           {},
