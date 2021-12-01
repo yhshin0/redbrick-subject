@@ -138,9 +138,9 @@ export class ProjectsService {
     const project = await this.findOne(id);
     this.checkAuthor(project, user);
 
-    const timeouts = this.schedulerRegistry.getTimeouts();
+    const timeoutList = this.schedulerRegistry.getTimeouts();
     const timeoutKey = PROJECT_CONSTANTS.TIMEOUT_KEY_PREFIX + id;
-    if (timeouts.includes(timeoutKey)) {
+    if (timeoutList.includes(timeoutKey)) {
       this.schedulerRegistry.deleteTimeout(timeoutKey);
     }
 
