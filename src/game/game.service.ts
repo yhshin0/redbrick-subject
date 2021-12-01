@@ -126,21 +126,7 @@ export class GameService {
       isNaN(pageSize) || pageSize <= 0
         ? GAME_CONSTANTS.LIST_DEFAULT_PAGE_SIZE
         : pageSize;
-    const totalCount = await this.gameRepository
-      .createQueryBuilder('game')
-      .innerJoin('game.user', 'user')
-      .where(`game.title like :keyword`, { keyword: `%${keyword}%` })
-      .orWhere(`user.nickname like :keyword`, { keyword: `%${keyword}%` })
-      .getCount();
-    const data = await this.gameRepository
-      .createQueryBuilder('game')
-      .innerJoin('game.user', 'user')
-      .where(`game.title like :keyword`, { keyword: `%${keyword}%` })
-      .orWhere(`user.nickname like :keyword`, { keyword: `%${keyword}%` })
-      .limit(pageSize)
-      .offset(page * pageSize)
-      .getMany();
-    return { totalCount, data };
+    return await this.gameRepository.search({ page, pageSize, keyword });
   }
 
   private checkAuthor(game: Game, user: User): void {

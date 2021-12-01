@@ -86,4 +86,23 @@ export class GameRepository extends Repository<Game> {
       .getMany();
     return game;
   }
+
+  async search({
+    page,
+    pageSize,
+    keyword,
+  }: {
+    page: number;
+    pageSize: number;
+    keyword: string;
+  }): Promise<{ totalCount: number; data: Game[] }> {
+    const data = await this.createQueryBuilder('game')
+      .innerJoin('game.user', 'user')
+      .where(`game.title like :keyword`, { keyword: `%${keyword}%` })
+      .orWhere(`user.nickname like :keyword`, { keyword: `%${keyword}%` })
+      .limit(pageSize)
+      .offset(page * pageSize)
+      .getManyAndCount();
+    return { totalCount: data[1], data: data[0] };
+  }
 }
