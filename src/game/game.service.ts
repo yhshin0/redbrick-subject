@@ -6,14 +6,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { Project } from '../projects/entities/project.entity';
 import { User } from '../users/entities/user.entity';
-import { Like } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
 import { GameRepository } from './game.repository';
-import { skip, take } from 'rxjs';
 
 @Injectable()
 export class GameService {

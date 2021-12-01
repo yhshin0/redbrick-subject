@@ -1,4 +1,3 @@
-import { CoreEntity } from '../../core/entities/core.entity';
 import {
   Column,
   Entity,
@@ -7,6 +6,8 @@ import {
   ManyToMany,
   OneToOne,
 } from 'typeorm';
+
+import { CoreEntity } from '../../core/entities/core.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { User } from '../../users/entities/user.entity';
 

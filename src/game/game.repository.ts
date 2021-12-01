@@ -2,9 +2,10 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { EntityRepository, Repository } from 'typeorm';
+
 import { Project } from '../projects/entities/project.entity';
 import { User } from '../users/entities/user.entity';
-import { EntityRepository, Repository } from 'typeorm';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game } from './entities/game.entity';
 
