@@ -16,7 +16,7 @@ import { User } from '../users/entities/user.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project } from './entities/project.entity';
-import { IFindAllResponse } from './projects.interface';
+import { IFindAllResponse, IProjectInfoForPublish } from './projects.interface';
 import { GameService } from '../game/game.service';
 import { PublishProjectDto } from './dto/publish-project.dto';
 import { PROJECT_CONSTANTS, PROJECT_ERROR_MSG } from './projects.constants';
@@ -177,11 +177,7 @@ export class ProjectsService {
     project,
     publishProjectDto,
     user,
-  }: {
-    project: Project;
-    publishProjectDto: PublishProjectDto;
-    user: User;
-  }): Promise<void> {
+  }: IProjectInfoForPublish): Promise<void> {
     const createGameDto = {
       title: project.title,
       ...publishProjectDto,
@@ -195,11 +191,7 @@ export class ProjectsService {
     project,
     publishProjectDto,
     user,
-  }: {
-    project: Project;
-    publishProjectDto: PublishProjectDto;
-    user: User;
-  }): Promise<void> {
+  }: IProjectInfoForPublish): Promise<void> {
     const game = await this.gameService.getGameByProject(project);
     let updateGameDto;
     updateGameDto = Object.assign(
