@@ -145,8 +145,8 @@ export class ProjectsService {
     }
 
     const cacheKey = PROJECT_CONSTANTS.CACHE_KEY_PREFIX + id;
-    await this.cacheService.set(cacheKey, updateProjectDto);
-    const cacheData = await this.cacheService.get(cacheKey);
+    await this.cacheService.setCacheData(cacheKey, updateProjectDto);
+    const cacheData = await this.cacheService.getCacheData(cacheKey);
 
     this.schedulerRegistry.addTimeout(
       timeoutKey,
