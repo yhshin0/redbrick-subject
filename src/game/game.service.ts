@@ -12,6 +12,7 @@ import { User } from '../users/entities/user.entity';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
+import { GAME_CONSTANTS, GAME_ERROR_MSG } from './game.constants';
 import { GameRepository } from './game.repository';
 
 @Injectable()
@@ -34,15 +35,19 @@ export class GameService {
   }
 
   getGames(page: number, pageSize: number): Promise<Game[]> {
-    page = isNaN(page) || page <= 0 ? 0 : page - 1;
-    pageSize = isNaN(pageSize) || pageSize <= 0 ? 5 : pageSize;
+    page =
+      isNaN(page) || page <= 0 ? GAME_CONSTANTS.LIST_DEFAULT_PAGE : page - 1;
+    pageSize =
+      isNaN(pageSize) || pageSize <= 0
+        ? GAME_CONSTANTS.LIST_DEFAULT_PAGE_SIZE
+        : pageSize;
     return this.gameRepository.findGames(page, pageSize);
   }
 
   async getGameById(id: number): Promise<Game> {
     const game = await this.gameRepository.findOneGame(id);
     if (!game) {
-      throw new NotFoundException('유효한 게임 id가 아닙니다.');
+      throw new NotFoundException(GAME_ERROR_MSG.INVALID_GAME_ID);
     }
 
     return game;
@@ -51,7 +56,7 @@ export class GameService {
   async increaseCount(id: number): Promise<Game> {
     const game = await this.gameRepository.findOneGame(id);
     if (!game) {
-      throw new NotFoundException('유효한 게임 id가 아닙니다.');
+      throw new NotFoundException(GAME_ERROR_MSG.INVALID_GAME_ID);
     }
 
     game.viewCount++;
@@ -69,7 +74,7 @@ export class GameService {
     });
 
     if (!game) {
-      throw new NotFoundException('유효한 게임 id가 아닙니다.');
+      throw new NotFoundException(GAME_ERROR_MSG.INVALID_GAME_ID);
     }
 
     return game;
@@ -89,11 +94,11 @@ export class GameService {
     user: User;
   }): Promise<Game> {
     if (Object.keys(updateGameDto).length === 0) {
-      throw new BadRequestException('요청 수정 값이 잘못되었습니다.');
+      throw new BadRequestException(GAME_ERROR_MSG.NO_VALUE_FOR_UPDATE);
     }
     const game = await this.getGameById(id);
     if (game.user.id !== user.id) {
-      throw new UnauthorizedException('해당 프로젝트를 작성한 유저가 아닙니다');
+      throw new UnauthorizedException(GAME_ERROR_MSG.NOT_AUTHOR);
     }
     await this.gameRepository.update({ id }, updateGameDto);
     return await this.getGameById(id);
@@ -102,7 +107,7 @@ export class GameService {
   async deleteGame(id: number, user: User): Promise<{ message: string }> {
     const game = await this.getGameById(id);
     if (game.user.id !== user.id) {
-      throw new UnauthorizedException('해당 프로젝트를 작성한 유저가 아닙니다');
+      throw new UnauthorizedException(GAME_ERROR_MSG.NOT_AUTHOR);
     }
     await this.gameRepository.softDelete({ id });
     return { message: '게임 삭제 완료' };
@@ -111,7 +116,7 @@ export class GameService {
   async addOrRemoveLike(id: number, user: User): Promise<{ message: string }> {
     const game = await this.gameRepository.findOne({ id });
     if (!game) {
-      throw new NotFoundException('유효한 게임 id가 아닙니다.');
+      throw new NotFoundException(GAME_ERROR_MSG.INVALID_GAME_ID);
     }
     return this.gameRepository.addOrRemoveLike(game, user);
   }
@@ -125,8 +130,12 @@ export class GameService {
     pageSize: number;
     keyword: string;
   }): Promise<{ totalCount: number; data: Game[] }> {
-    page = isNaN(page) || page <= 0 ? 0 : page - 1;
-    pageSize = isNaN(pageSize) || pageSize <= 0 ? 5 : pageSize;
+    page =
+      isNaN(page) || page <= 0 ? GAME_CONSTANTS.LIST_DEFAULT_PAGE : page - 1;
+    pageSize =
+      isNaN(pageSize) || pageSize <= 0
+        ? GAME_CONSTANTS.LIST_DEFAULT_PAGE_SIZE
+        : pageSize;
     const totalCount = await this.gameRepository
       .createQueryBuilder('game')
       .innerJoin('game.user', 'user')

@@ -8,6 +8,7 @@ import { Project } from '../projects/entities/project.entity';
 import { User } from '../users/entities/user.entity';
 import { CreateGameDto } from './dto/create-game.dto';
 import { Game } from './entities/game.entity';
+import { GAME_ERROR_MSG } from './game.constants';
 
 @EntityRepository(Game)
 export class GameRepository extends Repository<Game> {
@@ -27,7 +28,7 @@ export class GameRepository extends Repository<Game> {
       return game;
     } catch (error) {
       if ((error.code = 'SQLITE_CONSTRAINT')) {
-        throw new BadRequestException('이미 퍼블리싱 된 게임입니다.');
+        throw new BadRequestException(GAME_ERROR_MSG.ALREADY_PUBLISHED);
       }
       throw new InternalServerErrorException();
     }
