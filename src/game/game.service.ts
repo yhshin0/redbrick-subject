@@ -33,8 +33,10 @@ export class GameService {
     return this.gameRepository.createGame({ createGameDto, project, user });
   }
 
-  getGames(limit: number, offset: number): Promise<Game[]> {
-    return this.gameRepository.findGames(limit, offset);
+  getGames(page: number, pageSize: number): Promise<Game[]> {
+    page = isNaN(page) || page <= 0 ? 0 : page - 1;
+    pageSize = isNaN(pageSize) || pageSize <= 0 ? 5 : pageSize;
+    return this.gameRepository.findGames(page, pageSize);
   }
 
   async getGameById(id: number, addViewCount = false): Promise<Game> {
@@ -109,14 +111,16 @@ export class GameService {
   }
 
   async search({
-    limit,
-    offset,
+    page,
+    pageSize,
     keyword,
   }: {
-    limit: number;
-    offset: number;
+    page: number;
+    pageSize: number;
     keyword: string;
   }): Promise<{ totalCount: number; data: Game[] }> {
+    page = isNaN(page) || page <= 0 ? 0 : page - 1;
+    pageSize = isNaN(pageSize) || pageSize <= 0 ? 5 : pageSize;
     const totalCount = await this.gameRepository
       .createQueryBuilder('game')
       .innerJoin('game.user', 'user')
@@ -128,8 +132,8 @@ export class GameService {
       .innerJoin('game.user', 'user')
       .where(`game.title like :keyword`, { keyword: `%${keyword}%` })
       .orWhere(`user.nickname like :keyword`, { keyword: `%${keyword}%` })
-      .limit(limit)
-      .offset(offset)
+      .limit(pageSize)
+      .offset(page * pageSize)
       .getMany();
     return { totalCount, data };
   }

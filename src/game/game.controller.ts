@@ -41,20 +41,24 @@ export class GameController {
   }
 
   @Get()
-  getGames(@Query('page') page: string): Promise<Game[]> {
-    const limit = 5;
-    const offset = page ? (+page - 1) * limit : 0;
-    return this.gameService.getGames(limit, offset);
+  getGames(
+    @Query('page') page: string,
+    @Query('pageSize') pageSize: string,
+  ): Promise<Game[]> {
+    return this.gameService.getGames(+page, +pageSize);
   }
 
   @Get('/search')
   search(
     @Query('keyword') keyword: string,
     @Query('page') page: string,
+    @Query('pageSize') pageSize: string,
   ): Promise<{ totalCount: number; data: Game[] }> {
-    const limit = 5;
-    const offset = page ? (+page - 1) * limit : 0;
-    return this.gameService.search({ limit, offset, keyword });
+    return this.gameService.search({
+      page: +page,
+      pageSize: +pageSize,
+      keyword,
+    });
   }
 
   @Get('/:id')
