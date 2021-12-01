@@ -63,7 +63,12 @@ export class GameController {
 
   @Get('/:id')
   getGameById(@Param('id') id: string): Promise<Game> {
-    return this.gameService.getGameById(+id, true);
+    return this.gameService.getGameById(+id);
+  }
+
+  @Get('/count/:id')
+  increaseCount(@Param('id') id: string): Promise<Game> {
+    return this.gameService.increaseCount(+id);
   }
 
   @Patch('/:id')

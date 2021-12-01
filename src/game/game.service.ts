@@ -39,21 +39,27 @@ export class GameService {
     return this.gameRepository.findGames(page, pageSize);
   }
 
-  async getGameById(id: number, addViewCount = false): Promise<Game> {
+  async getGameById(id: number): Promise<Game> {
     const game = await this.gameRepository.findOneGame(id);
     if (!game) {
       throw new NotFoundException('유효한 게임 id가 아닙니다.');
     }
 
-    if (addViewCount) {
-      game.viewCount = game.viewCount + 1;
-      try {
-        await this.gameRepository.save(game);
-      } catch (error) {
-        throw new InternalServerErrorException();
-      }
-    }
     return game;
+  }
+
+  async increaseCount(id: number): Promise<Game> {
+    const game = await this.gameRepository.findOneGame(id);
+    if (!game) {
+      throw new NotFoundException('유효한 게임 id가 아닙니다.');
+    }
+
+    game.viewCount++;
+    try {
+      return await this.gameRepository.save(game);
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async getGameByProject(project: Project): Promise<Game> {
