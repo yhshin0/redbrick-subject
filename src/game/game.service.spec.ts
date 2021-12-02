@@ -244,11 +244,11 @@ describe('GameService', () => {
     });
   });
 
-  describe('addOrRemoveLike', () => {
+  describe('toggleLike', () => {
     it('성공적으로 게임 좋아요 및 좋아요 취소 시 메세지 리턴', async () => {
       gameRepository.findOneGame.mockResolvedValue(mockGameResult);
       gameRepository.toggleLike.mockResolvedValue({ message: 'message' });
-      const result = await gameService.addOrRemoveLike(1, mockUser);
+      const result = await gameService.toggleLike(1, mockUser);
       expect(result).toEqual({ message: 'message' });
     });
   });

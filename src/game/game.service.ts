@@ -110,7 +110,7 @@ export class GameService {
     return { message: '게임 삭제 완료' };
   }
 
-  async addOrRemoveLike(id: number, user: User): Promise<{ message: string }> {
+  async toggleLike(id: number, user: User): Promise<{ message: string }> {
     const game = await this.getGameById(id);
     return this.gameRepository.toggleLike(game, user);
   }
