@@ -1,61 +1,43 @@
 # redbrick-subject
 
-원티드x위코드 백엔드 프리온보딩 3번째 과제입니다.
+## 게임 퍼블리싱 서비스를 위한 API 구현
+
+## 서비스 
+
+https://blooming-reaches-88618.herokuapp.com
+
+## API 문서
+
+https://documenter.getpostman.com/view/18183669/UVJfjFYb
 
 ## 제출 기업 정보
 
 - 기업명 : redbricks
 - 주요 서비스 사이트: [WizLab(위즈랩)](http://www.wizlab.net/)
 
-## 과제 : WizLab(위즈랩) 게임 퍼블리싱 서비스
-
-- 학생들에게 코딩의 재미를 느낄 수 있게 간단한 게임을 코딩을 통해 만들 수 있는 플랫폼 개발
-
-### [필수 요구 사항]
+## 요구 사항
 
 - 회원가입
-- 게임 제작
+- 게임 제작 API
   - 프로젝트는 실시간으로 반영이 되어야 합니다
     - 프로젝트 수정 중 의도치 않은 사이트 종료 시에도 작업 내역은 보존되어야 합니다
-- 게임 출시하기
+  - 게임 CRUD
+  - 조회수 조작 API
+  - 좋아요 API
+  - 게임명/사용자명으로 게임 검색
+- 게임 출시하기(퍼블리싱)
   - **프로젝트 당 퍼블리싱 할 수 있는 개수는 하나**입니다.
   - 퍼블리싱한 게임은 수정할 수 있어야 하며, 수정 후 재출시시 기존에 퍼블리싱된 게임도 수정됩니다
   - 출시하는 게임은 다른 사용자들도 볼 수 있으며, 사용자들의 **조회수 / 좋아요 등을 기록**할 수 있어야 합니다
   - '게임 혹은 사용자 **검색**'을 통해서 찾을 수 있어야 합니다
 
-### [개발 요구사항]
-
-**아래의 문제를 풀어야 합니다.**
-
-```jsx
-- 참고 - 문제 1,2번은 필수 문제이며, 3번은 선택입니다
-문제 1. '회원가입'부터 '게임 출시'까지 필요한 테이블을 설계하세요
-
-문제 2. 다음에 필요한 API를 설계하세요
-
-	1) 게임 제작 API
-	2) 조회수 수정, 좋아요 API
-	3) 게임/사용자 검색 API
-
-- option -
-문제 3.
- (1) 프로젝트 실시간 반영을 위한 Architecture를 설계하세요 ( 그림이 있다면 좋습니다 )
- (2) 위의 Architecture를 토대로 기능을 구현하세요
-```
-
-### [평가 요소]
-
-- 주어진 요구사항에 대한 설계/구현 능력
-- 코드로 동료를 배려할 수 있는 구성 능력 (코드, 주석, README 등)
-- 유닛 테스트 구현 능력
-
 ## 조원
 
 | 이름   | 외부링크                                                                                                                                        | 담당 기능                                                   |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **신영학** | **[깃허브](https://github.com/yhshin0)/[블로그](https://nbkw.tistory.com/)**                                                                        | **프로젝트 테이블 CRUD, 게임 검색, 게임 퍼블리싱, 유닛 테스트, 리팩토링** |
 | 이현준(조장) | [깃허브](https://github.com/lhj0621)/[블로그](https://supiz.tistory.com/)                                                                       | 총괄, 게임 CRUD, 프로젝트 실시간 저장 기능, 헤로쿠 배포     |
 | 김태련 | [깃허브](https://github.com/nojamcode)/[블로그](https://velog.io/@code-link)                                                                    | 유저 수정, 로그인, 로그인 인증, 유닛테스트                  |
-| 신영학 | [깃허브](https://github.com/yhshin0)/[블로그](https://nbkw.tistory.com/)                                                                        | 프로젝트 테이블 CRUD, 게임 검색, 게임 퍼블리싱, 유닛 테스트 |
 | 임유라 | [깃허브](https://github.com/BangleCoding)/[블로그](https://banglecoding.github.io/)                                                             | 유저 생성, 로그아웃, 유닛 테스트, README 작성               |
 | 이기범 | [깃허브](https://github.com/gibson-lee93)/[블로그](https://mysterious-laborer-518.notion.site/Gibson-s-Notion-2dd7f598fba64f1c9806cded5b4b83a0) | 게임 CRUD, 게임 좋아요 기능, 유닛 테스트                    |
 | 정진산 | [깃허브](https://github.com/chinsanchung)/[블로그](https://chinsanchung.github.io/)                                                             | 프로젝트 테이블 CRUD, 게임 검색, 게임 퍼블리싱, 유닛 테스트 |
@@ -66,10 +48,11 @@
 - 프레임워크: NestJs
 - 데이터베이스: SQLite3
 - 라이브러리: typeorm, passport, passport-jwt, bcrypt, class-validator, class-transformer, cache-manager, schedule
+- 배포 환경: Heroku
 
 ## ERD
 
-![레드브릭데이터베이스 ERD](https://user-images.githubusercontent.com/47234375/140962281-fd05897c-4839-4036-aac6-f3948ae01519.png)
+![레드브릭데이터베이스 ERD](https://user-images.githubusercontent.com/51621520/144440332-019b1743-1380-4570-8a15-4c2aa266a9da.png)
 
 ## 구현 기능
 
@@ -117,132 +100,125 @@
 - 유저의 nickname 이나 game의 title로 게임을 검색할 수 있도록 구현했습니다. 목록으로 출력하며, 페이지네이션으로 한 페이지당 5개씩 출력합니다.
 
 ### Architecture
-![redbrick-architecture](https://user-images.githubusercontent.com/42320464/140992108-5c6a77ae-df8e-42f3-957b-8e6078953353.jpg)
-1. 클라이언트는 프로젝트 조회 요청 후 현재 데이터 Local Storage 저장
-1. 클라이언트 프로젝트 수정 시 Local Storage 값과 비교하여 다르면 서버에게 프로젝트 업데이트 요청
-1. 서버는 cache에 데이터 임시 저장 후 값을 임시 저장 값 응답
-1. 클라이언트 요청이 특정 시간 이상 없을 시 가장 최근 임시 저장된 값을 가져와 DB 반영
 
-## API 문서
+![redbrick-architecture](https://user-images.githubusercontent.com/51621520/144440642-76fa3636-c787-4c9c-82d7-2ed6cb869440.png)
 
-<!-- TODO -->
+1. 클라이언트에서 프로젝트 수정 화면에 들어가면 프로젝트의 데이터를 특정 공간(ex: Local Storage)에 저장
+1. 클라이언트에서 프로젝트를 수정할 때 특정 공간에 있는 값과 특정 시간마다 비교하여 다르면 서버에게 프로젝트 업데이트 요청
+1. 서버는 업데이트 요청을 받은 데이터를 cache에 저장 후, cache에 저장한 값을 클라이언트에게 응답으로 반환
+1. 서버에서 클라이언트 업데이트 요청이 특정 시간(ex: 60s) 동안 없다면 가장 최근에 cache에 저장했던 값을 DB에 저장
 
-API 테스트를 위한 방법을 [POSTMAN document](https://documenter.getpostman.com/view/15323948/UVC5F7xT)에서 확인하실 수 있습니다.
+## 실행 방법
 
-## 배포
+1. `git clone` 명령어로 프로젝트 파일을 가져옵니다.
 
-<!-- TODO -->
+2. `npm install` 명령으로 서버 실행에 필요한 패키지를 설치합니다.
 
-Heroku를 이용해 배포를 진행했으며, 사이트의 주소는 [https://pocky-redbrick-subject.herokuapp.com/](https://pocky-redbrick-subject.herokuapp.com/) 입니다.
+3. `npm build` 명령으로 프로젝트를 빌드합니다.
 
+4. `.env` 파일을 작성하여 `dist` 폴더로 이동시킵니다. 해당 파일에는 `PORT`(실행시킬 PORT 값), `JWT_SECRET`(jwt secret 값)을 정의합니다.
 
+	.env
 
-## 설치 및 실행 방법
+	```
+	PORT=3000
+	JWT_SECRET=1q2w3e4r
+	```
 
-### 공통
+	또는 PORT, JWT_SECRET을 환경변수로 등록합니다.
 
-1. 최상위 폴더에 `.env` 파일에 `JWT_SECRET`에 임의의 문자열을 작성해 저장합니다.
-1. `npm install`으로 패키지를 설치합니다.
-1. 테스트
-	- 개발일 경우: `npm run start`으로 `localhost:3000`에서 테스트하실 수 있습니다.
-	- 배포일 경우: `npm run build`으로 애플리케이션을 빌드합니다. 그리고 `npm run start:prod`으로 실행합니다.
-1. POST `localhost:3000/users`에서 `email`, `password`, `nickname`를 입력해 유저를 생성합니다.
-1. POST `localhost:3000/auth/signin`에 `email`, `password`을 입력하신 후 결과값으로 accessToken을 발급받습니다.
-1. 프로젝트 생성, 퍼블리싱 등 권한이 필요한 API의 주소를 입력한 후, Headers 의 Authorization에 accessToken을 붙여넣어 권한을 얻은 후 API를 호출합니다.
+	```
+	$ export PORT=3000
+	$ export JWT_SECRET=1q2w3e4r
+	```
 
-## 테스트
-![image](https://user-images.githubusercontent.com/42320464/140993810-a6384238-6c6b-473a-8ab2-5b34ae13f96f.png)
+5. `npm run start:prod` 명령어로 서버를 실행시킵니다.
+
+	```
+	$ npm run start:prod
+	```
 
 ## 폴더 구조
 
 ```bash
-|   .eslintrc.js
-|   .gitignore
-|   .prettierrc
-|   nest-cli.json
-|   package-lock.json
-|   package.json
-|   Procfile
-|   README.md
-|   tree.txt
-|   tsconfig.build.json
-|   tsconfig.json
-|   
-+---.github
-|       PULL_REQUEST_TEMPLATE.md
-|       
-+---src
-|   |   app.controller.spec.ts
-|   |   app.controller.ts
-|   |   app.module.ts
-|   |   app.service.ts
-|   |   main.ts
-|   |   
-|   +---auth
-|   |   |   auth.controller.ts
-|   |   |   auth.module.ts
-|   |   |   auth.service.spec.ts
-|   |   |   auth.service.ts
-|   |   |   get-user.decorator.ts
-|   |   |   jwt-auth.guard.ts
-|   |   |   jwt.strategy.ts
-|   |   |   
-|   |   \---dto
-|   |           login-user.dto.ts
-|   |           
-|   +---cache
-|   |       cache.module.ts
-|   |       cache.service.ts
-|   |       
-|   +---core
-|   |   \---entities
-|   |           core.entity.ts
-|   |           
-|   +---game
-|   |   |   game.controller.ts
-|   |   |   game.module.ts
-|   |   |   game.repository.ts
-|   |   |   game.service.spec.ts
-|   |   |   game.service.ts
-|   |   |   
-|   |   +---dto
-|   |   |       create-game.dto.ts
-|   |   |       update-game.dto.ts
-|   |   |       
-|   |   \---entities
-|   |           game.entity.ts
-|   |           
-|   +---projects
-|   |   |   projects.controller.spec.ts
-|   |   |   projects.controller.ts
-|   |   |   projects.interface.ts
-|   |   |   projects.module.ts
-|   |   |   projects.service.spec.ts
-|   |   |   projects.service.ts
-|   |   |   
-|   |   +---dto
-|   |   |       create-project.dto.ts
-|   |   |       publish-project.dto.ts
-|   |   |       update-project.dto.ts
-|   |   |       
-|   |   \---entities
-|   |           project.entity.ts
-|   |           
-|   \---users
-|       |   user.service.spec.ts
-|       |   users.controller.spec.ts
-|       |   users.controller.ts
-|       |   users.module.ts
-|       |   users.service.ts
-|       |   
-|       +---dto
-|       |       create-user.dto.ts
-|       |       update-user.dto.ts
-|       |       
-|       \---entities
-|               user.entity.ts
-|               
-\---test
-        app.e2e-spec.ts
-        jest-e2e.json
+.
+├── .env
+├── .eslintrc.js
+├── .github
+│   └── PULL_REQUEST_TEMPLATE.md
+├── .gitignore
+├── .prettierrc
+├── Procfile
+├── README.md
+├── nest-cli.json
+├── package-lock.json
+├── package.json
+├── redbrick.db
+├── src
+│   ├── app.controller.spec.ts
+│   ├── app.controller.ts
+│   ├── app.module.ts
+│   ├── app.service.ts
+│   ├── auth
+│   │   ├── auth.constants.ts
+│   │   ├── auth.controller.ts
+│   │   ├── auth.module.ts
+│   │   ├── auth.service.spec.ts
+│   │   ├── auth.service.ts
+│   │   ├── dto
+│   │   │   └── login-user.dto.ts
+│   │   ├── get-user.decorator.ts
+│   │   ├── jwt-auth.guard.ts
+│   │   └── jwt.strategy.ts
+│   ├── cache
+│   │   ├── cache.constants.ts
+│   │   ├── cache.module.ts
+│   │   └── cache.service.ts
+│   ├── core
+│   │   └── entities
+│   │       └── core.entity.ts
+│   ├── game
+│   │   ├── dto
+│   │   │   ├── create-game.dto.ts
+│   │   │   └── update-game.dto.ts
+│   │   ├── entities
+│   │   │   └── game.entity.ts
+│   │   ├── game.constants.ts
+│   │   ├── game.controller.ts
+│   │   ├── game.module.ts
+│   │   ├── game.repository.ts
+│   │   ├── game.service.spec.ts
+│   │   └── game.service.ts
+│   ├── main.ts
+│   ├── projects
+│   │   ├── dto
+│   │   │   ├── create-project.dto.ts
+│   │   │   ├── publish-project.dto.ts
+│   │   │   └── update-project.dto.ts
+│   │   ├── entities
+│   │   │   └── project.entity.ts
+│   │   ├── projects.constants.ts
+│   │   ├── projects.controller.ts
+│   │   ├── projects.interface.ts
+│   │   ├── projects.module.ts
+│   │   ├── projects.service.spec.ts
+│   │   └── projects.service.ts
+│   └── users
+│       ├── dto
+│       │   ├── create-user.dto.ts
+│       │   └── update-user.dto.ts
+│       ├── entities
+│       │   └── user.entity.ts
+│       ├── user.constants.ts
+│       ├── user.service.spec.ts
+│       ├── users.controller.spec.ts
+│       ├── users.controller.ts
+│       ├── users.module.ts
+│       └── users.service.ts
+├── test
+│   ├── app.e2e-spec.ts
+│   └── jest-e2e.json
+├── tsconfig.build.json
+└── tsconfig.json
+
 ```
