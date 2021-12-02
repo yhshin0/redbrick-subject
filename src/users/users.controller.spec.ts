@@ -6,14 +6,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { USER_ERROR_MSG } from './user.constants';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 jest.mock('./users.service');
 
 describe('UsersController', () => {
-  let controller: UsersController;
-  let service: UsersService;
+  let usersController: UsersController;
+  let usersService: UsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,12 +22,14 @@ describe('UsersController', () => {
       providers: [UsersService],
     }).compile();
 
-    controller = module.get<UsersController>(UsersController);
-    service = module.get<UsersService>(UsersService);
+    usersController = module.get<UsersController>(UsersController);
+    usersService = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect.assertions(2);
+    expect(usersController).toBeDefined();
+    expect(usersService).toBeDefined();
   });
 
   const user: User = {
@@ -57,22 +60,23 @@ describe('UsersController', () => {
     games: null,
     likes: null,
   };
+
   describe('회원 생성', () => {
     it('회원가입 성공', async () => {
-      jest.spyOn(service, 'createUser').mockResolvedValue(createUser);
-      const result = await controller.createUser(createUser);
+      jest.spyOn(usersService, 'createUser').mockResolvedValue(createUser);
+      const result = await usersController.createUser(createUser);
       expect(result).toMatchObject(createUser);
     });
 
     it('회원가입 실패, 이미 존재하는 이메일', async () => {
-      jest.spyOn(service, 'createUser').mockImplementation(() => {
-        throw new ConflictException('이미 가입된 이메일입니다.');
+      jest.spyOn(usersService, 'createUser').mockImplementation(() => {
+        throw new ConflictException(USER_ERROR_MSG.EXISTED_EMAIL);
       });
       try {
-        await controller.createUser(createUser);
+        await usersController.createUser(createUser);
       } catch (error) {
         expect(error).toBeInstanceOf(ConflictException);
-        expect(error.message).toBe('이미 가입된 이메일입니다.');
+        expect(error.message).toBe(USER_ERROR_MSG.EXISTED_EMAIL);
       }
     });
   });
@@ -96,23 +100,24 @@ describe('UsersController', () => {
       password: '123',
       nickname: 'zz',
     };
+
     it('회원 수정 성공', async () => {
-      jest.spyOn(service, 'updateUser').mockResolvedValue(updatedUser);
-      const result = await controller.updateUser(user, updateUserDto);
+      jest.spyOn(usersService, 'updateUser').mockResolvedValue(updatedUser);
+      const result = await usersController.updateUser(user, updateUserDto);
       expect(result).toMatchObject(updatedUser);
     });
 
     it('회원 수정 실패', async () => {
-      jest.spyOn(service, 'updateUser').mockImplementation(() => {
+      jest.spyOn(usersService, 'updateUser').mockImplementation(() => {
         throw new InternalServerErrorException(
-          '회원 수정에 오류가 발생하였습니다.',
+          USER_ERROR_MSG.UPDATE_INTERNAL_SERVER_ERROR,
         );
       });
       try {
-        const result = await controller.updateUser(user, updateUserDto);
-      } catch (e) {
-        expect(e).toBeInstanceOf(InternalServerErrorException);
-        expect(e.message).toBe('회원 수정에 오류가 발생하였습니다.');
+        const result = await usersController.updateUser(user, updateUserDto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(InternalServerErrorException);
+        expect(error.message).toBe(USER_ERROR_MSG.UPDATE_INTERNAL_SERVER_ERROR);
       }
     });
   });
