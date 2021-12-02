@@ -48,11 +48,11 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/likes/:id')
-  addOrRemoveLike(
+  toggleLike(
     @Param('id') id: string,
     @GetUser() user: User,
   ): Promise<{ message: string }> {
-    return this.gameService.addOrRemoveLike(+id, user);
+    return this.gameService.toggleLike(+id, user);
   }
 
   @Get('/:id')
