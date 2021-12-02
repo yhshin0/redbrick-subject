@@ -9,6 +9,7 @@ import { User } from '../users/entities/user.entity';
 import { Project } from '../projects/entities/project.entity';
 import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
+import { GAME_ERROR_MSG } from './game.constants';
 
 const mockGameRepository = () => ({
   findGames: jest.fn(),
@@ -17,10 +18,12 @@ const mockGameRepository = () => ({
   restore: jest.fn(),
   update: jest.fn(),
   findOne: jest.fn(),
+  save: jest.fn(),
   softDelete: jest.fn(),
-  addOrRemoveLike: jest.fn(),
+  toggleLike: jest.fn(),
   getCount: jest.fn(),
   getMany: jest.fn(),
+  search: jest.fn(),
 });
 
 const mockUser = new User();
@@ -59,25 +62,10 @@ describe('GameService', () => {
     gameRepository = module.get(GameRepository);
   });
 
-  describe('getGames', () => {
-    it('전체 조회 후 Game[] 리턴', async () => {
-      gameRepository.findGames.mockResolvedValue('someValue');
-      const result = await gameService.getGames(0, 0);
-      expect(result).toEqual('someValue');
-    });
-  });
-
-  describe('getGameById', () => {
-    it('id로 조회 후 Game 리턴', async () => {
-      gameRepository.findOneGame.mockResolvedValue(mockGameResult);
-      const result = await gameService.getGameById(1);
-      expect(result).toEqual(mockGameResult);
-    });
-
-    it('조회되지 않는 id일 경우 에러 리턴', async () => {
-      gameRepository.findOneGame.mockResolvedValue(null);
-      expect(gameService.getGameById(0)).rejects.toThrow(NotFoundException);
-    });
+  it('should be defined', () => {
+    expect.assertions(2);
+    expect(gameService).toBeDefined();
+    expect(gameRepository).toBeDefined();
   });
 
   describe('createGame', () => {
@@ -90,43 +78,95 @@ describe('GameService', () => {
 
     it('Game을 생성하고 Game 리턴', async () => {
       gameRepository.createGame.mockResolvedValue(mockGameResult);
-      const result = await gameService.createGame(
-        mockCreateGameDto,
-        mockProject,
-        mockUser,
-      );
+      const result = await gameService.createGame({
+        createGameDto: mockCreateGameDto,
+        project: mockProject,
+        user: mockUser,
+      });
       expect(result).toEqual(mockGameResult);
     });
 
     it('Game을 생성 실패 시 에러 리턴', async () => {
       gameRepository.createGame.mockResolvedValue(null);
       try {
-        await gameService.createGame(mockCreateGameDto, mockProject, mockUser);
+        await gameService.createGame({
+          createGameDto: mockCreateGameDto,
+          project: mockProject,
+          user: mockUser,
+        });
       } catch (error) {
-        expect(error).toEqual(InternalServerErrorException);
+        expect(error).toBeInstanceOf(InternalServerErrorException);
+      }
+    });
+  });
+
+  describe('getGames', () => {
+    it('전체 조회 후 Game[] 리턴', async () => {
+      const findGamesResult = { totalCount: 1, data: [mockGameResult] };
+      gameRepository.findGames.mockResolvedValue(findGamesResult);
+      const result = await gameService.getGames(0, 0);
+      expect(result).toEqual(findGamesResult);
+    });
+  });
+
+  describe('getGameById', () => {
+    it('id로 조회 후 Game 리턴', async () => {
+      gameRepository.findOneGame.mockResolvedValue(mockGameResult);
+      const result = await gameService.getGameById(1);
+      expect(result).toEqual(mockGameResult);
+    });
+
+    it('조회되지 않는 id일 경우 에러 리턴', async () => {
+      expect.assertions(2);
+      gameRepository.findOneGame.mockResolvedValue(null);
+
+      try {
+        const result = await gameService.getGameById(1);
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toEqual(GAME_ERROR_MSG.INVALID_GAME_ID);
+      }
+    });
+  });
+
+  describe('increaseCount', () => {
+    it('게임의 조회수 증가에 성공한다', async () => {
+      gameRepository.findOneGame.mockResolvedValue(mockGameResult);
+
+      mockGameResult.viewCount++;
+      const savedGame = Object.assign({}, { ...mockGameResult });
+      gameRepository.save.mockResolvedValue(savedGame);
+
+      const result = await gameService.increaseCount(mockGameResult.id);
+      expect(result.viewCount).toEqual(savedGame.viewCount);
+    });
+  });
+
+  describe('getPublishedGame', () => {
+    it('publish 된 게임 조회에 성공한다', async () => {
+      gameRepository.findOne.mockResolvedValue(mockGameResult);
+      const result = await gameService.getPublishedGame(mockProject);
+      expect(result).toMatchObject(mockGameResult);
+    });
+
+    it('publish 된 게임 조회에 실패한다', async () => {
+      expect.assertions(2);
+      gameRepository.findOne.mockResolvedValue(null);
+      try {
+        const result = await gameService.getPublishedGame(mockProject);
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toEqual(GAME_ERROR_MSG.INVALID_GAME_ID);
       }
     });
   });
 
   describe('restoreGame', () => {
     it('삭제 된 게임을 restore 하고 리턴 void', async () => {
-      const result = await gameService.restoreGame(1);
-      expect(result).toEqual(undefined);
-    });
-  });
-
-  describe('getGameByProjectId', () => {
-    it('Project id로 조회 후 Game 리턴', async () => {
-      gameRepository.findOne.mockResolvedValue(mockGameResult);
-      const result = await gameService.getGameByProject(mockProject);
-      expect(result).toEqual(mockGameResult);
-    });
-
-    it('조회되지 않는 id일 경우 에러 리턴', async () => {
-      gameRepository.findOne.mockResolvedValue(null);
-      expect(gameService.getGameByProject(mockProject)).rejects.toThrow(
-        NotFoundException,
-      );
+      await gameService.restoreGame(1);
+      let func = jest.fn();
+      (func as jest.Mock) = gameRepository.restore;
+      expect(func).toBeCalled();
     });
   });
 
@@ -141,19 +181,44 @@ describe('GameService', () => {
     it('Game을 update하고 Game 리턴', async () => {
       gameRepository.findOneGame.mockResolvedValue(mockGameResult);
       gameRepository.update.mockResolvedValue(mockGameResult);
-      const result = await gameService.updateGame(
-        1,
-        mockUpdateGameDto,
-        mockUser,
-      );
+      const result = await gameService.updateGame({
+        id: 1,
+        updateGameDto: mockUpdateGameDto,
+        user: mockUser,
+      });
       expect(result).toEqual(mockGameResult);
     });
 
     it('유효한 게임 id가 아닐 시 에러 리턴', async () => {
-      gameRepository.update.mockResolvedValue(null);
-      expect(
-        gameService.updateGame(1, mockUpdateGameDto, mockUser),
-      ).rejects.toThrow(NotFoundException);
+      expect.assertions(2);
+      gameRepository.findOneGame.mockResolvedValue(null);
+      try {
+        const result = await gameService.updateGame({
+          id: 1,
+          updateGameDto: mockUpdateGameDto,
+          user: mockUser,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toEqual(GAME_ERROR_MSG.INVALID_GAME_ID);
+      }
+    });
+
+    it('게임의 작성자가 아니어서 수정에 실패한다', async () => {
+      gameRepository.findOneGame.mockResolvedValue(mockGameResult);
+      jest
+        .spyOn(GameService.prototype as any, 'checkAuthor')
+        .mockImplementation(() => new UnauthorizedException());
+      try {
+        const result = await gameService.updateGame({
+          id: 1,
+          updateGameDto: mockUpdateGameDto,
+          user: mockUser,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        expect(error.message).toEqual(GAME_ERROR_MSG.NOT_AUTHOR);
+      }
     });
   });
 
@@ -167,27 +232,41 @@ describe('GameService', () => {
 
     it('유효한 게임 id가 아닐 시 에러 리턴', async () => {
       gameRepository.findOneGame.mockResolvedValue(mockGameResult);
+      jest
+        .spyOn(GameService.prototype as any, 'checkAuthor')
+        .mockImplementation(() => new UnauthorizedException());
       try {
-        await gameService.deleteGame(1, mockUser);
+        const result = await gameService.deleteGame(1, mockUser);
       } catch (error) {
-        expect(error).toEqual(UnauthorizedException);
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        expect(error.message).toEqual(GAME_ERROR_MSG.NOT_AUTHOR);
       }
     });
   });
 
   describe('addOrRemoveLike', () => {
     it('성공적으로 게임 좋아요 및 좋아요 취소 시 메세지 리턴', async () => {
-      gameRepository.findOne.mockResolvedValue(mockGameResult);
-      gameRepository.addOrRemoveLike.mockResolvedValue({ message: 'message' });
+      gameRepository.findOneGame.mockResolvedValue(mockGameResult);
+      gameRepository.toggleLike.mockResolvedValue({ message: 'message' });
       const result = await gameService.addOrRemoveLike(1, mockUser);
       expect(result).toEqual({ message: 'message' });
     });
+  });
 
-    it('조회되지 않는 id일 경우 에러 리턴', async () => {
-      gameRepository.findOne.mockResolvedValue(null);
-      expect(gameService.addOrRemoveLike(1, mockUser)).rejects.toThrow(
-        NotFoundException,
-      );
+  describe('search', () => {
+    it('검색에 성공한다', async () => {
+      const page = 1;
+      const pageSize = 5;
+      const keyword = 'title';
+
+      const totalCount = 1;
+      gameRepository.search.mockResolvedValue({
+        totalCount,
+        data: [mockGameResult],
+      });
+
+      const result = await gameService.search({ page, pageSize, keyword });
+      expect(result).toMatchObject({ totalCount, data: [mockGameResult] });
     });
   });
 });
