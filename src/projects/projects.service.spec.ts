@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   HttpException,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -14,7 +15,7 @@ import { User } from '../users/entities/user.entity';
 import { Project } from './entities/project.entity';
 import { ProjectsService } from './projects.service';
 import { GameService } from '../game/game.service';
-import { PROJECT_ERROR_MSG } from './projects.constants';
+import { PROJECT_CONSTANTS, PROJECT_ERROR_MSG } from './projects.constants';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
 const mockProjectsRepository = () => ({
@@ -104,11 +105,12 @@ describe('ProjectsService', () => {
   });
 
   describe('createProject', () => {
+    const title = 'title';
+    const code = 'code';
+    const createProjectDto = { title, code };
+
     it('프로젝트를 생성한다', async () => {
       expect.assertions(4);
-      const title = 'title';
-      const code = 'code';
-      const createProjectDto = { title, code };
       const id = 1;
       const isPublished = false;
 
@@ -125,14 +127,31 @@ describe('ProjectsService', () => {
         isPublished,
       });
 
-      const expectProject = await projectsService.createProject(
+      const result = await projectsService.createProject(
         createProjectDto,
         user,
       );
-      expect(expectProject.id).toEqual(id);
-      expect(expectProject.title).toEqual(title);
-      expect(expectProject.code).toEqual(code);
-      expect(expectProject.isPublished).toEqual(isPublished);
+      expect(result.id).toEqual(id);
+      expect(result.title).toEqual(title);
+      expect(result.code).toEqual(code);
+      expect(result.isPublished).toEqual(isPublished);
+    });
+
+    it('프로젝트를 생성하는 데 서버 에러로 인해 실패한다', async () => {
+      expect.assertions(2);
+      projectRepository.save.mockImplementation(() => {
+        throw new Error();
+      });
+
+      try {
+        const result = await projectsService.createProject(
+          createProjectDto,
+          user,
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(InternalServerErrorException);
+        expect(error.message).toEqual(PROJECT_ERROR_MSG.ERROR_FOR_CREATE);
+      }
     });
   });
 
@@ -268,6 +287,28 @@ describe('ProjectsService', () => {
         expect(error.message).toEqual(PROJECT_ERROR_MSG.NOT_AUTHOR);
       }
     });
+
+    it('내부 서버 에러로 실패한다', async () => {
+      expect.assertions(2);
+      jest.spyOn(projectsService, 'findOne').mockImplementation(() => {
+        throw new Error();
+      });
+
+      try {
+        const result = await projectsService.publishProject({
+          id,
+          publishProjectDto,
+          user,
+        });
+      } catch (error) {
+        const mockRollbackTransaction = jest.spyOn(
+          queryRunner,
+          'rollbackTransaction',
+        );
+        expect(mockRollbackTransaction).toBeCalled();
+        expect(error).toBeInstanceOf(InternalServerErrorException);
+      }
+    });
   });
 
   describe('findAll', () => {
@@ -343,14 +384,16 @@ describe('ProjectsService', () => {
         .spyOn(ProjectsService.prototype as any, 'checkAuthor')
         .mockReturnValue(undefined);
 
-      jest.spyOn(schedulerRegistry, 'getTimeouts').mockReturnValue([]);
+      const timeoutKey = PROJECT_CONSTANTS.TIMEOUT_KEY_PREFIX + id;
+      const timeoutList = [timeoutKey];
+      jest.spyOn(schedulerRegistry, 'getTimeouts').mockReturnValue(timeoutList);
 
       jest.spyOn(cacheService, 'setCacheData').mockResolvedValue(undefined);
       const cacheData = { ...updateProjectDto };
       jest.spyOn(cacheService, 'getCacheData').mockResolvedValue(cacheData);
 
       jest.spyOn(schedulerRegistry, 'addTimeout').mockReturnValue();
-      jest.spyOn(global, 'setTimeout').mockReturnValue(null);
+      jest.spyOn(global, 'setTimeout').mockReturnValue(undefined);
 
       const result = await projectsService.update({
         id,
