@@ -29,10 +29,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }): Promise<User> {
     const user: User = await this.usersSerivce.findOne(email);
 
+    if (!user) {
+      throw new UnauthorizedException(AUTH_ERROR_MSG.INVALID_TOKEN);
+    }
+
     const tokenLoginedAt = new Date(loginedAt).getTime();
     const userLoginedAt = new Date(user.loginedAt).getTime();
 
-    if (!user || tokenLoginedAt !== userLoginedAt) {
+    if (tokenLoginedAt !== userLoginedAt) {
       throw new UnauthorizedException(AUTH_ERROR_MSG.INVALID_TOKEN);
     }
 
