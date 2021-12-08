@@ -72,7 +72,7 @@ export class GameController {
 
   @Delete('/:id')
   @UseGuards(JwtAuthGuard)
-  deleteGameById(
+  deleteGame(
     @Param('id') id: string,
     @GetUser() user: User,
   ): Promise<{ message: string }> {
