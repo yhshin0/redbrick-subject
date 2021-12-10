@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
@@ -10,6 +11,7 @@ import { Project } from '../projects/entities/project.entity';
 import { GameRepository } from './game.repository';
 import { GameService } from './game.service';
 import { GAME_ERROR_MSG } from './game.constants';
+import { UpdateGameDto } from './dto/update-game.dto';
 
 const mockGameRepository = () => ({
   findGames: jest.fn(),
@@ -140,6 +142,22 @@ describe('GameService', () => {
       const result = await gameService.increaseCount(mockGameResult.id);
       expect(result.viewCount).toEqual(savedGame.viewCount);
     });
+
+    it('내부 에러로 인해 게임의 조회수 증가에 실패한다', async () => {
+      gameRepository.findOneGame.mockResolvedValue(mockGameResult);
+
+      mockGameResult.viewCount++;
+      const savedGame = Object.assign({}, { ...mockGameResult });
+      gameRepository.save.mockImplementation(() => {
+        throw new Error();
+      });
+
+      try {
+        const result = await gameService.increaseCount(mockGameResult.id);
+      } catch (error) {
+        expect(error).toBeInstanceOf(InternalServerErrorException);
+      }
+    });
   });
 
   describe('getPublishedGame', () => {
@@ -149,7 +167,7 @@ describe('GameService', () => {
       expect(result).toMatchObject(mockGameResult);
     });
 
-    it('publish 된 게임 조회에 실패한다', async () => {
+    it('publish 된 게임이 존재하지 않아 조회에 실패한다', async () => {
       expect.assertions(2);
       gameRepository.findOne.mockResolvedValue(null);
       try {
@@ -187,6 +205,22 @@ describe('GameService', () => {
         user: mockUser,
       });
       expect(result).toEqual(mockGameResult);
+    });
+
+    it('수정 사항이 존재하지 않아 수정에 실패한다', async () => {
+      const id = 1;
+      const updateGameDto = new UpdateGameDto();
+
+      try {
+        const result = await gameService.updateGame({
+          id,
+          updateGameDto,
+          user: mockUser,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadRequestException);
+        expect(error.message).toEqual(GAME_ERROR_MSG.NO_VALUE_FOR_UPDATE);
+      }
     });
 
     it('유효한 게임 id가 아닐 시 에러 리턴', async () => {
